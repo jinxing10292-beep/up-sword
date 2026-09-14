@@ -125,6 +125,7 @@ if (signupForm) {
             // player_stats 초기화
             await CONFIG.supabase.from('player_stats').insert({
                 user_id: data.user?.id,
+                username: username,
                 sword_level: 0,
                 gold: 1000000,
                 money: 0,
@@ -202,9 +203,13 @@ if (logoutBtn) {
         gameState.money = 0;
         gameState.cumulativeCost = 0;
         
+        const loginEmail = document.getElementById('loginEmail');
+        const loginPassword = document.getElementById('loginPassword');
+        if (loginEmail) loginEmail.value = '';
+        if (loginPassword) loginPassword.value = '';
+        
+        switchTab('login');
         showPage('authPage');
-        document.getElementById('loginEmail').value = '';
-        document.getElementById('loginPassword').value = '';
     });
 }
 

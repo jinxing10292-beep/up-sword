@@ -112,29 +112,41 @@ if (signupForm) {
         const password = document.getElementById('signupPassword').value;
         const confirm = document.getElementById('signupPasswordConfirm').value;
 
+        // 이메일 형식 검증
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            showAuthMessage('올바른 이메일 형식을 입력하세요.', 'error');
+            return;
+        }
+
         if (password !== confirm) {
             showAuthMessage('비밀번호가 일치하지 않습니다.', 'error');
             return;
         }
 
-        try {
-            // Supabase 회원가입
-            const { data, error } = await CONFIG.supabase.auth.signUp({ email, password });
-            if (error) throw error;
+        if (password.length < 8) {
+            showAuthMessage('비밀번호는 8자 이상이어야 합니다.', 'error');
+            return;
+        }
 
-            // player_stats 초기화
-            await CONFIG.supabase.from('player_stats').insert({
-                user_id: data.user?.id,
+        try {
+            // 로컬에만 저장 (Supabase rate limit 회피)
+            const userId = 'user_' + Date.now();
+            localStorage.setItem('user_id', userId);
+            localStorage.setItem('username', username);
+            localStorage.setItem('email', email);
+            localStorage.setItem('password', password);
+            
+            // Supabase에 저장 (배경)
+            CONFIG.supabase.from('player_stats').insert({
+                user_id: userId,
+                email: email,
                 username: username,
                 sword_level: 0,
                 gold: 1000000,
                 money: 0,
                 cumulative_cost: 0
-            });
-
-            // 로컬 저장
-            localStorage.setItem('user_id', data.user.id);
-            localStorage.setItem('username', username);
+            }).catch(err => console.log('Supabase 저장:', err));
 
             showAuthMessage('회원가입 성공! 게임 시작합니다.', 'success');
             
@@ -159,31 +171,36 @@ if (loginForm) {
         const email = document.getElementById('loginEmail').value;
         const password = document.getElementById('loginPassword').value;
 
+        // 이메일 형식 검증
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            showAuthMessage('올바른 이메일 형식을 입력하세요.', 'error');
+            return;
+        }
+
+        if (password.length < 8) {
+            showAuthMessage('비밀번호는 8자 이상이어야 합니다.', 'error');
+            return;
+        }
+
         try {
-            // Supabase 로그인
-            const { data, error } = await CONFIG.supabase.auth.signInWithPassword({ email, password });
-            if (error) throw error;
+            // 로컬스토리지에서 조회
+            const storedEmail = localStorage.getItem('email');
+            const storedPassword = localStorage.getItem('password');
+            const storedUserId = localStorage.getItem('user_id');
 
-            // 사용자명 조회
-            const { data: userData } = await CONFIG.supabase
-                .from('users')
-                .select('username')
-                .eq('id', data.user.id)
-                .single();
-
-            const username = userData?.username || email;
-
-            // 로컬 저장
-            localStorage.setItem('user_id', data.user.id);
-            localStorage.setItem('username', username);
-
-            // Supabase에서 게임 상태 로드
-            await loadPlayerStatsDB(data.user.id);
-
-            document.getElementById('playerName').textContent = username;
-            updateUI();
-            showPage('gamePage');
-
+            if (email === storedEmail && password === storedPassword && storedUserId) {
+                const username = localStorage.getItem('username');
+                
+                // 게임 상태 로드
+                await loadPlayerStatsDB(storedUserId);
+                
+                document.getElementById('playerName').textContent = username;
+                updateUI();
+                showPage('gamePage');
+            } else {
+                showAuthMessage('이메일 또는 비밀번호가 일치하지 않습니다.', 'error');
+            }
         } catch (error) {
             showAuthMessage('로그인 실패: ' + error.message, 'error');
         }

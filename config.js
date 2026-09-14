@@ -10,6 +10,7 @@ const CONFIG = {
     SUPABASE_URL,
     SUPABASE_ANON_KEY,
     supabase,
+    TEST_MODE: true, // 테스트 모드
     API_TIMEOUT: 5000,
     MAX_RETRIES: 3
 };

@@ -69,13 +69,22 @@ if (loginForm) {
         const password = document.getElementById('loginPassword').value;
         
         try {
-            const { data, error } = await CONFIG.supabase.auth.signInWithPassword({ email, password });
-            if (error) throw error;
-            
-            localStorage.setItem('user_id', data.user.id);
-            localStorage.setItem('username', email);
-            showPage('gamePage');
-            updateUI();
+            if (CONFIG.TEST_MODE) {
+                // 테스트 모드: 로컬 로그인
+                localStorage.setItem('user_id', 'test-user-' + Date.now());
+                localStorage.setItem('username', email);
+                showPage('gamePage');
+                updateUI();
+                showAuthMessage('테스트 로그인 성공!', 'success');
+            } else {
+                const { data, error } = await CONFIG.supabase.auth.signInWithPassword({ email, password });
+                if (error) throw error;
+                
+                localStorage.setItem('user_id', data.user.id);
+                localStorage.setItem('username', email);
+                showPage('gamePage');
+                updateUI();
+            }
         } catch (error) {
             showAuthMessage('로그인 실패: ' + error.message, 'error');
         }
@@ -97,10 +106,19 @@ if (signupForm) {
         }
 
         try {
-            const { data, error } = await CONFIG.supabase.auth.signUp({ email, password });
-            if (error) throw error;
-            showAuthMessage('회원가입 성공! 로그인하세요.', 'success');
-            switchTab('login');
+            if (CONFIG.TEST_MODE) {
+                // 테스트 모드: 로컬 회원가입
+                localStorage.setItem('user_id', 'test-user-' + Date.now());
+                localStorage.setItem('username', email);
+                showAuthMessage('테스트 회원가입 성공! 로그인합니다.', 'success');
+                setTimeout(() => showPage('gamePage'), 1500);
+                updateUI();
+            } else {
+                const { data, error } = await CONFIG.supabase.auth.signUp({ email, password });
+                if (error) throw error;
+                showAuthMessage('회원가입 성공! 로그인하세요.', 'success');
+                switchTab('login');
+            }
         } catch (error) {
             showAuthMessage('회원가입 실패: ' + error.message, 'error');
         }

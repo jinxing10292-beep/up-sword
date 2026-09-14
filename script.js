@@ -7,12 +7,15 @@ function showPage(pageId) {
 // 탭 전환
 function switchTab(tab) {
     document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
-    document.getElementById(tab === 'login' ? 'loginTab' : 'signupTab').classList.add('active');
+    const tabId = tab === 'login' ? 'loginTab' : 'signupTab';
+    const tabElement = document.getElementById(tabId);
+    if (tabElement) tabElement.classList.add('active');
 }
 
 // 메시지 표시
 function showAuthMessage(msg, type) {
     const msgDiv = document.getElementById('authMessage');
+    if (!msgDiv) return;
     msgDiv.textContent = msg;
     msgDiv.className = `auth-message ${type}`;
     setTimeout(() => msgDiv.className = 'auth-message', 3000);
@@ -28,13 +31,15 @@ function formatNumber(num) {
 
 // UI 업데이트
 function updateUI() {
-    document.getElementById('goldDisplay').textContent = formatNumber(gameState.gold);
-    document.getElementById('moneyDisplay').textContent = formatNumber(gameState.money);
-    document.getElementById('swordLevel').textContent = gameState.swordLevel;
-    document.getElementById('displayLevel').textContent = `+${gameState.swordLevel}`;
-    document.getElementById('cumulativeCost').textContent = formatNumber(gameState.cumulativeCost);
-    document.getElementById('rouletteGold').textContent = formatNumber(gameState.gold);
-    updateEnhanceInfo();
+    if (document.getElementById('goldDisplay')) {
+        document.getElementById('goldDisplay').textContent = formatNumber(gameState.gold);
+        document.getElementById('moneyDisplay').textContent = formatNumber(gameState.money);
+        document.getElementById('swordLevel').textContent = gameState.swordLevel;
+        document.getElementById('displayLevel').textContent = `+${gameState.swordLevel}`;
+        document.getElementById('cumulativeCost').textContent = formatNumber(gameState.cumulativeCost);
+        document.getElementById('rouletteGold').textContent = formatNumber(gameState.gold);
+        updateEnhanceInfo();
+    }
 }
 
 // 강화 정보 업데이트
@@ -56,159 +61,204 @@ function updateEnhanceInfo() {
 }
 
 // 로그인
-document.getElementById('loginForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const email = document.getElementById('loginEmail').value;
-    const password = document.getElementById('loginPassword').value;
-    
-    try {
-        const { data, error } = await CONFIG.supabase.auth.signInWithPassword({ email, password });
-        if (error) throw error;
+const loginForm = document.getElementById('loginForm');
+if (loginForm) {
+    loginForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const email = document.getElementById('loginEmail').value;
+        const password = document.getElementById('loginPassword').value;
         
-        localStorage.setItem('user_id', data.user.id);
-        localStorage.setItem('username', email);
-        showPage('gamePage');
-        updateUI();
-    } catch (error) {
-        showAuthMessage('로그인 실패: ' + error.message, 'error');
-    }
-});
+        try {
+            const { data, error } = await CONFIG.supabase.auth.signInWithPassword({ email, password });
+            if (error) throw error;
+            
+            localStorage.setItem('user_id', data.user.id);
+            localStorage.setItem('username', email);
+            showPage('gamePage');
+            updateUI();
+        } catch (error) {
+            showAuthMessage('로그인 실패: ' + error.message, 'error');
+        }
+    });
+}
 
 // 회원가입
-document.getElementById('signupForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const email = document.getElementById('signupEmail').value;
-    const password = document.getElementById('signupPassword').value;
-    const confirm = document.getElementById('signupPasswordConfirm').value;
+const signupForm = document.getElementById('signupForm');
+if (signupForm) {
+    signupForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const email = document.getElementById('signupEmail').value;
+        const password = document.getElementById('signupPassword').value;
+        const confirm = document.getElementById('signupPasswordConfirm').value;
 
-    if (password !== confirm) {
-        showAuthMessage('비밀번호가 일치하지 않습니다.', 'error');
-        return;
-    }
+        if (password !== confirm) {
+            showAuthMessage('비밀번호가 일치하지 않습니다.', 'error');
+            return;
+        }
 
-    try {
-        const { data, error } = await CONFIG.supabase.auth.signUp({ email, password });
-        if (error) throw error;
-        showAuthMessage('회원가입 성공! 로그인하세요.', 'success');
-        switchTab('login');
-    } catch (error) {
-        showAuthMessage('회원가입 실패: ' + error.message, 'error');
-    }
-});
+        try {
+            const { data, error } = await CONFIG.supabase.auth.signUp({ email, password });
+            if (error) throw error;
+            showAuthMessage('회원가입 성공! 로그인하세요.', 'success');
+            switchTab('login');
+        } catch (error) {
+            showAuthMessage('회원가입 실패: ' + error.message, 'error');
+        }
+    });
+}
 
 // 로그아웃
-document.getElementById('logoutBtn').addEventListener('click', async () => {
-    await CONFIG.supabase.auth.signOut();
-    localStorage.removeItem('user_id');
-    localStorage.removeItem('username');
-    showPage('loginPage');
-});
+const logoutBtn = document.getElementById('logoutBtn');
+if (logoutBtn) {
+    logoutBtn.addEventListener('click', async () => {
+        await CONFIG.supabase.auth.signOut();
+        localStorage.removeItem('user_id');
+        localStorage.removeItem('username');
+        showPage('loginPage');
+    });
+}
 
 // 강화 버튼
-document.getElementById('enhanceBtn').addEventListener('click', () => {
-    const result = gameState.attemptEnhance();
-    const resultMessage = document.getElementById('resultMessage');
-    const resultText = document.getElementById('resultText');
-    
-    resultMessage.className = 'result-message ' + result.result;
-    resultText.textContent = result.message;
-    resultMessage.style.display = 'block';
-    
-    updateUI();
-    setTimeout(() => resultMessage.style.display = 'none', 3000);
-});
+const enhanceBtn = document.getElementById('enhanceBtn');
+if (enhanceBtn) {
+    enhanceBtn.addEventListener('click', () => {
+        const result = gameState.attemptEnhance();
+        const resultMessage = document.getElementById('resultMessage');
+        const resultText = document.getElementById('resultText');
+        
+        resultMessage.className = 'result-message ' + result.result;
+        resultText.textContent = result.message;
+        resultMessage.style.display = 'block';
+        
+        updateUI();
+        setTimeout(() => resultMessage.style.display = 'none', 3000);
+    });
+}
 
 // 판매 버튼
-document.getElementById('sellBtn').addEventListener('click', () => {
-    const result = gameState.sellSword();
-    alert(result.message);
-    updateUI();
-});
+const sellBtn = document.getElementById('sellBtn');
+if (sellBtn) {
+    sellBtn.addEventListener('click', () => {
+        const result = gameState.sellSword();
+        alert(result.message);
+        updateUI();
+    });
+}
 
 // 보관 버튼
-document.getElementById('storeBtn').addEventListener('click', () => {
-    if (gameState.swordLevel === 0) {
-        alert('보관할 검이 없습니다!');
-        return;
-    }
-    alert(`+${gameState.swordLevel} 검을 보관했습니다!`);
-});
+const storeBtn = document.getElementById('storeBtn');
+if (storeBtn) {
+    storeBtn.addEventListener('click', () => {
+        if (gameState.swordLevel === 0) {
+            alert('보관할 검이 없습니다!');
+            return;
+        }
+        alert(`+${gameState.swordLevel} 검을 보관했습니다!`);
+    });
+}
 
 // 메인 메뉴 버튼들
-document.getElementById('rankingBtn').addEventListener('click', () => {
+const rankingBtn = document.getElementById('rankingBtn');
+if (rankingBtn) rankingBtn.addEventListener('click', () => {
     updateRankingDisplay();
     showPage('rankingPage');
 });
 
-document.getElementById('upgradeBtn').addEventListener('click', () => {
+const upgradeBtn = document.getElementById('upgradeBtn');
+if (upgradeBtn) upgradeBtn.addEventListener('click', () => {
     showPage('upgradePage');
     updateUI();
 });
 
-document.getElementById('rouletteBtn').addEventListener('click', () => {
+const rouletteBtn = document.getElementById('rouletteBtn');
+if (rouletteBtn) rouletteBtn.addEventListener('click', () => {
     showPage('roulettePage');
     updateUI();
 });
 
-document.getElementById('checkBtn').addEventListener('click', () => alert('준비 중입니다!'));
-document.getElementById('battleBtn').addEventListener('click', () => alert('준비 중입니다!'));
-document.getElementById('gmBtn').addEventListener('click', () => {
+const checkBtn = document.getElementById('checkBtn');
+if (checkBtn) checkBtn.addEventListener('click', () => alert('준비 중입니다!'));
+
+const battleBtn = document.getElementById('battleBtn');
+if (battleBtn) battleBtn.addEventListener('click', () => alert('준비 중입니다!'));
+
+const gmBtn = document.getElementById('gmBtn');
+if (gmBtn) gmBtn.addEventListener('click', () => {
     const pwd = prompt('GM 비밀번호:');
     if (pwd === 'admin') gameState.addGold(1000000);
 });
-document.getElementById('inventoryBtn').addEventListener('click', () => showPage('inventoryPage'));
-document.getElementById('missionBtn').addEventListener('click', () => alert('준비 중입니다!'));
-document.getElementById('shopBtn').addEventListener('click', () => alert('준비 중입니다!'));
-document.getElementById('equipBtn').addEventListener('click', () => alert('준비 중입니다!'));
+
+const inventoryBtn = document.getElementById('inventoryBtn');
+if (inventoryBtn) inventoryBtn.addEventListener('click', () => showPage('inventoryPage'));
+
+const missionBtn = document.getElementById('missionBtn');
+if (missionBtn) missionBtn.addEventListener('click', () => alert('준비 중입니다!'));
+
+const shopBtn = document.getElementById('shopBtn');
+if (shopBtn) shopBtn.addEventListener('click', () => alert('준비 중입니다!'));
+
+const equipBtn = document.getElementById('equipBtn');
+if (equipBtn) equipBtn.addEventListener('click', () => alert('준비 중입니다!'));
 
 // 돌아가기 버튼들
-document.getElementById('backFromUpgrade').addEventListener('click', () => showPage('gamePage'));
-document.getElementById('backFromRoulette').addEventListener('click', () => showPage('gamePage'));
-document.getElementById('backFromRanking').addEventListener('click', () => showPage('gamePage'));
-document.getElementById('backFromInventory').addEventListener('click', () => showPage('gamePage'));
+const backFromUpgrade = document.getElementById('backFromUpgrade');
+if (backFromUpgrade) backFromUpgrade.addEventListener('click', () => showPage('gamePage'));
+
+const backFromRoulette = document.getElementById('backFromRoulette');
+if (backFromRoulette) backFromRoulette.addEventListener('click', () => showPage('gamePage'));
+
+const backFromRanking = document.getElementById('backFromRanking');
+if (backFromRanking) backFromRanking.addEventListener('click', () => showPage('gamePage'));
+
+const backFromInventory = document.getElementById('backFromInventory');
+if (backFromInventory) backFromInventory.addEventListener('click', () => showPage('gamePage'));
 
 // 룰렛 스핀
-document.getElementById('spinBtn').addEventListener('click', () => {
-    const betAmount = parseInt(document.getElementById('betAmount').value) || 0;
-    
-    if (betAmount <= 0) {
-        alert('베팅 금액을 입력하세요.');
-        return;
-    }
-    
-    if (gameState.gold < betAmount) {
-        alert('골드가 부족합니다!');
-        return;
-    }
-
-    document.getElementById('spinBtn').disabled = true;
-    const wheel = document.getElementById('rouletteWheel');
-    const spinResult = gameState.spin(betAmount);
-
-    wheel.style.transition = 'none';
-    wheel.style.transform = 'rotate(0deg)';
-    void wheel.offsetWidth;
-
-    const rotations = 5;
-    const finalPosition = spinResult.spinIndex * (360 / 46);
-    const spinAngle = rotations * 360 + finalPosition + Math.random() * 30;
-
-    wheel.style.transition = 'transform 3s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
-    wheel.style.transform = `rotate(${spinAngle}deg)`;
-
-    setTimeout(() => {
-        document.getElementById('resultText').textContent = spinResult.message;
-        document.getElementById('resultAmount').textContent = 
-            spinResult.winAmount > 0 ? `획득: +${formatNumber(spinResult.winAmount)}G` : '';
-        document.getElementById('rouletteResult').style.display = 'block';
+const spinBtn = document.getElementById('spinBtn');
+if (spinBtn) {
+    spinBtn.addEventListener('click', () => {
+        const betAmount = parseInt(document.getElementById('betAmount').value) || 0;
         
-        updateUI();
-        document.getElementById('spinBtn').disabled = false;
-        document.getElementById('betAmount').value = '';
+        if (betAmount <= 0) {
+            alert('베팅 금액을 입력하세요.');
+            return;
+        }
         
-        setTimeout(() => document.getElementById('rouletteResult').style.display = 'none', 3000);
-    }, 3000);
-});
+        if (gameState.gold < betAmount) {
+            alert('골드가 부족합니다!');
+            return;
+        }
+
+        spinBtn.disabled = true;
+        const wheel = document.getElementById('rouletteWheel');
+        const spinResult = gameState.spin(betAmount);
+
+        wheel.style.transition = 'none';
+        wheel.style.transform = 'rotate(0deg)';
+        void wheel.offsetWidth;
+
+        const rotations = 5;
+        const finalPosition = spinResult.spinIndex * (360 / 46);
+        const spinAngle = rotations * 360 + finalPosition + Math.random() * 30;
+
+        wheel.style.transition = 'transform 3s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+        wheel.style.transform = `rotate(${spinAngle}deg)`;
+
+        setTimeout(() => {
+            const resultDiv = document.getElementById('rouletteResult');
+            document.getElementById('resultText').textContent = spinResult.message;
+            document.getElementById('resultAmount').textContent = 
+                spinResult.winAmount > 0 ? `획득: +${formatNumber(spinResult.winAmount)}G` : '';
+            resultDiv.style.display = 'block';
+            
+            updateUI();
+            spinBtn.disabled = false;
+            document.getElementById('betAmount').value = '';
+            
+            setTimeout(() => resultDiv.style.display = 'none', 3000);
+        }, 3000);
+    });
+}
 
 // 빠른 베팅
 document.querySelectorAll('.quick-bet').forEach(btn => {

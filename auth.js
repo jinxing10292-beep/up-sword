@@ -1,47 +1,8 @@
-// Supabase 초기화 (나중에 설정)
-let supabase = null;
-
-function initSupabase(url, key) {
-    supabase = window.supabase.createClient(url, key);
-}
-
-// 회원가입
+// Supabase 함수들
 async function signUp(email, username, password) {
     try {
-        const { data, error } = await supabase.auth.signUp({
-            email: email,
-            password: password,
-        });
-
+        const { data, error } = await CONFIG.supabase.auth.signUp({ email, password });
         if (error) throw error;
-
-        // users 테이블에 추가 정보 저장
-        const { error: insertError } = await supabase
-            .from('users')
-            .insert([
-                {
-                    id: data.user.id,
-                    email: email,
-                    username: username,
-                    password_hash: data.user.id // 실제로는 해시된 비밀번호
-                }
-            ]);
-
-        if (insertError) throw insertError;
-
-        // player_stats 초기화
-        await supabase
-            .from('player_stats')
-            .insert([
-                {
-                    user_id: data.user.id,
-                    sword_level: 0,
-                    gold: 1000000,
-                    money: 0,
-                    cumulative_cost: 0
-                }
-            ]);
-
         return { success: true, message: '회원가입 성공!' };
     } catch (error) {
         return { success: false, message: error.message };

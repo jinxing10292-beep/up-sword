@@ -6,6 +6,71 @@ function showPage(pageId) {
     document.getElementById(pageId).classList.add('active');
 }
 
+// 탭 전환
+function switchTab(tab) {
+    document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+    document.getElementById(tab === 'login' ? 'loginTab' : 'signupTab').classList.add('active');
+}
+
+// 메시지 표시
+function showAuthMessage(msg, type) {
+    const msgDiv = document.getElementById('authMessage');
+    msgDiv.textContent = msg;
+    msgDiv.className = `auth-message ${type}`;
+    setTimeout(() => msgDiv.className = 'auth-message', 3000);
+}
+
+// 로그인
+document.getElementById('loginForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const email = document.getElementById('loginEmail').value;
+    const password = document.getElementById('loginPassword').value;
+    
+    try {
+        const { data, error } = await CONFIG.supabase.auth.signInWithPassword({ email, password });
+        if (error) throw error;
+        
+        localStorage.setItem('user_id', data.user.id);
+        localStorage.setItem('username', email);
+        showPage('gamePage');
+        updateUI();
+    } catch (error) {
+        showAuthMessage('로그인 실패: ' + error.message, 'error');
+    }
+});
+
+// 회원가입
+document.getElementById('signupForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const email = document.getElementById('signupEmail').value;
+    const username = document.getElementById('signupUsername').value;
+    const password = document.getElementById('signupPassword').value;
+    const confirm = document.getElementById('signupPasswordConfirm').value;
+
+    if (password !== confirm) {
+        showAuthMessage('비밀번호가 일치하지 않습니다.', 'error');
+        return;
+    }
+
+    try {
+        const { data, error } = await CONFIG.supabase.auth.signUp({ email, password });
+        if (error) throw error;
+        
+        showAuthMessage('회원가입 성공! 로그인하세요.', 'success');
+        switchTab('login');
+    } catch (error) {
+        showAuthMessage('회원가입 실패: ' + error.message, 'error');
+    }
+});
+
+// 로그아웃
+document.getElementById('logoutBtn').addEventListener('click', async () => {
+    await CONFIG.supabase.auth.signOut();
+    localStorage.removeItem('user_id');
+    localStorage.removeItem('username');
+    showPage('loginPage');
+});
+
 // UI 업데이트 함수
 function updateUI() {
     // 메인 페이지

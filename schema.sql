@@ -86,8 +86,17 @@ CREATE POLICY "Players can update own stats" ON player_stats
 ALTER TABLE inventory ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "Players can read own inventory" ON inventory
-  FOR SELECT USING (auth.uid() = user_id);
+  FOR SELECT
+  USING (auth.uid() = user_id);
 
-CREATE POLICY "Players can manage own inventory" ON inventory
-  FOR INSERT, UPDATE, DELETE
+CREATE POLICY "Players can insert own inventory" ON inventory
+  FOR INSERT
+  WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY "Players can update own inventory" ON inventory
+  FOR UPDATE
+  USING (auth.uid() = user_id);
+
+CREATE POLICY "Players can delete own inventory" ON inventory
+  FOR DELETE
   USING (auth.uid() = user_id);

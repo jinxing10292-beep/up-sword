@@ -89,4 +89,5 @@ CREATE POLICY "Players can read own inventory" ON inventory
   FOR SELECT USING (auth.uid() = user_id);
 
 CREATE POLICY "Players can manage own inventory" ON inventory
-  FOR INSERT, UPDATE, DELETE USING (auth.uid() = user_id);
+  FOR INSERT, UPDATE, DELETE
+  USING (auth.uid() = user_id);

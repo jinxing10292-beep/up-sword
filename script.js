@@ -82,23 +82,37 @@ async function updatePlayerStatsDB(userId) {
 // Supabase에서 플레이어 상태 로드
 async function loadPlayerStatsDB(userId) {
     try {
+        console.log('Supabase에서 로드 시도:', userId);
         const { data, error } = await CONFIG.supabase
             .from('player_stats')
             .select('*')
             .eq('user_id', userId)
             .single();
         
-        if (error && error.code !== 'PGRST116') throw error;
+        // PGRST116 = no rows returned (데이터 없음, 새 사용자)
+        if (error && error.code !== 'PGRST116') {
+            throw error;
+        }
         
         if (data) {
+            console.log('Supabase 데이터 로드 성공:', data);
             gameState.swordLevel = data.sword_level || 0;
             gameState.gold = data.gold || 1000000;
             gameState.money = data.money || 0;
             gameState.cumulativeCost = data.cumulative_cost || 0;
             gameState.save();
+        } else {
+            console.log('Supabase에 데이터 없음, 초기값 설정');
+            gameState.swordLevel = 0;
+            gameState.gold = 1000000;
+            gameState.money = 0;
+            gameState.cumulativeCost = 0;
+            gameState.save();
         }
     } catch (error) {
         console.error('Supabase 로드 실패:', error);
+        // 에러 발생해도 로컬 데이터 사용
+        gameState.load();
     }
 }
 
@@ -131,7 +145,7 @@ if (signupForm) {
 
         try {
             // 로컬에만 저장 (Supabase rate limit 회피)
-            const userId = 'user_' + Date.now();
+            const userId = crypto.randomUUID();
             localStorage.setItem('user_id', userId);
             localStorage.setItem('username', username);
             localStorage.setItem('email', email);
@@ -151,6 +165,12 @@ if (signupForm) {
             showAuthMessage('회원가입 성공! 게임 시작합니다.', 'success');
             
             setTimeout(() => {
+                // 폼 클리어
+                document.getElementById('signupEmail').value = '';
+                document.getElementById('signupUsername').value = '';
+                document.getElementById('signupPassword').value = '';
+                document.getElementById('signupPasswordConfirm').value = '';
+                
                 gameState.load();
                 document.getElementById('playerName').textContent = username;
                 updateUI();
@@ -196,6 +216,11 @@ if (loginForm) {
                 await loadPlayerStatsDB(storedUserId);
                 
                 document.getElementById('playerName').textContent = username;
+                
+                // 폼 클리어
+                document.getElementById('loginEmail').value = '';
+                document.getElementById('loginPassword').value = '';
+                
                 updateUI();
                 showPage('gamePage');
             } else {
@@ -214,6 +239,8 @@ if (logoutBtn) {
         await CONFIG.supabase.auth.signOut();
         localStorage.removeItem('user_id');
         localStorage.removeItem('username');
+        localStorage.removeItem('email');
+        localStorage.removeItem('password');
         
         gameState.swordLevel = 0;
         gameState.gold = 0;
@@ -420,16 +447,26 @@ function updateRankingDisplay() {
 
 // === 초기화 ===
 document.addEventListener('DOMContentLoaded', () => {
+    console.log('게임 초기화 시작');
     const userId = localStorage.getItem('user_id');
     const username = localStorage.getItem('username');
+    const email = localStorage.getItem('email');
     
-    if (userId && username) {
+    console.log('저장된 정보:', { userId, username, email });
+    
+    if (userId && username && email) {
+        console.log('자동 로그인 시도:', userId);
         loadPlayerStatsDB(userId).then(() => {
+            console.log('게임 상태 로드 완료');
             document.getElementById('playerName').textContent = username;
             updateUI();
             showPage('gamePage');
+        }).catch(err => {
+            console.error('게임 상태 로드 실패:', err);
+            showPage('authPage');
         });
     } else {
+        console.log('로그인 페이지로 이동');
         showPage('authPage');
     }
 });

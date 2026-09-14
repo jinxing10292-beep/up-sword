@@ -42,6 +42,51 @@ function updateUI() {
     }
 }
 
+// Supabase에 플레이어 상태 저장
+async function updatePlayerStatsDB(userId) {
+    try {
+        const { data, error } = await CONFIG.supabase
+            .from('player_stats')
+            .upsert({
+                user_id: userId,
+                sword_level: gameState.swordLevel,
+                gold: gameState.gold,
+                money: gameState.money,
+                cumulative_cost: gameState.cumulativeCost,
+                last_updated: new Date()
+            }, { onConflict: 'user_id' });
+        
+        if (error) throw error;
+        console.log('Supabase 저장 성공');
+    } catch (error) {
+        console.error('Supabase 저장 실패:', error);
+    }
+}
+
+// Supabase에서 플레이어 상태 로드
+async function loadPlayerStatsDB(userId) {
+    try {
+        const { data, error } = await CONFIG.supabase
+            .from('player_stats')
+            .select('*')
+            .eq('user_id', userId)
+            .single();
+        
+        if (error && error.code !== 'PGRST116') throw error;
+        
+        if (data) {
+            gameState.swordLevel = data.sword_level || 0;
+            gameState.gold = data.gold || 1000000;
+            gameState.money = data.money || 0;
+            gameState.cumulativeCost = data.cumulative_cost || 0;
+            gameState.save();
+            console.log('Supabase 로드 성공');
+        }
+    } catch (error) {
+        console.error('Supabase 로드 실패:', error);
+    }
+}
+
 // 강화 정보 업데이트
 function updateEnhanceInfo() {
     if (gameState.swordLevel >= 30) {
@@ -70,10 +115,11 @@ if (loginForm) {
         
         try {
             if (CONFIG.TEST_MODE) {
-                // 테스트 모드: 로컬 로그인
-                localStorage.setItem('user_id', 'test-user-' + Date.now());
+                const testUserId = 'test-user-' + Date.now();
+                localStorage.setItem('user_id', testUserId);
                 localStorage.setItem('username', email);
                 showPage('gamePage');
+                document.getElementById('playerName').textContent = email;
                 updateUI();
                 showAuthMessage('테스트 로그인 성공!', 'success');
             } else {
@@ -82,6 +128,9 @@ if (loginForm) {
                 
                 localStorage.setItem('user_id', data.user.id);
                 localStorage.setItem('username', email);
+                document.getElementById('playerName').textContent = email;
+                
+                await loadPlayerStatsDB(data.user.id);
                 showPage('gamePage');
                 updateUI();
             }
@@ -107,15 +156,32 @@ if (signupForm) {
 
         try {
             if (CONFIG.TEST_MODE) {
-                // 테스트 모드: 로컬 회원가입
-                localStorage.setItem('user_id', 'test-user-' + Date.now());
+                const testUserId = 'test-user-' + Date.now();
+                localStorage.setItem('user_id', testUserId);
                 localStorage.setItem('username', email);
-                showAuthMessage('테스트 회원가입 성공! 로그인합니다.', 'success');
-                setTimeout(() => showPage('gamePage'), 1500);
-                updateUI();
+                document.getElementById('playerName').textContent = email;
+                showAuthMessage('테스트 회원가입 성공! 게임 시작됩니다.', 'success');
+                setTimeout(() => {
+                    showPage('gamePage');
+                    updateUI();
+                }, 1500);
             } else {
                 const { data, error } = await CONFIG.supabase.auth.signUp({ email, password });
                 if (error) throw error;
+                
+                localStorage.setItem('user_id', data.user.id);
+                localStorage.setItem('username', email);
+                
+                await CONFIG.supabase
+                    .from('player_stats')
+                    .insert({
+                        user_id: data.user.id,
+                        sword_level: 0,
+                        gold: 1000000,
+                        money: 0,
+                        cumulative_cost: 0
+                    });
+                
                 showAuthMessage('회원가입 성공! 로그인하세요.', 'success');
                 switchTab('login');
             }
@@ -139,7 +205,7 @@ if (logoutBtn) {
 // 강화 버튼
 const enhanceBtn = document.getElementById('enhanceBtn');
 if (enhanceBtn) {
-    enhanceBtn.addEventListener('click', () => {
+    enhanceBtn.addEventListener('click', async () => {
         const result = gameState.attemptEnhance();
         const resultMessage = document.getElementById('resultMessage');
         const resultText = document.getElementById('resultText');
@@ -149,6 +215,13 @@ if (enhanceBtn) {
         resultMessage.style.display = 'block';
         
         updateUI();
+        
+        // Supabase에 저장
+        const userId = localStorage.getItem('user_id');
+        if (userId && !CONFIG.TEST_MODE) {
+            await updatePlayerStatsDB(userId);
+        }
+        
         setTimeout(() => resultMessage.style.display = 'none', 3000);
     });
 }
@@ -156,22 +229,46 @@ if (enhanceBtn) {
 // 판매 버튼
 const sellBtn = document.getElementById('sellBtn');
 if (sellBtn) {
-    sellBtn.addEventListener('click', () => {
+    sellBtn.addEventListener('click', async () => {
         const result = gameState.sellSword();
         alert(result.message);
         updateUI();
+        
+        const userId = localStorage.getItem('user_id');
+        if (userId && !CONFIG.TEST_MODE) {
+            await updatePlayerStatsDB(userId);
+        }
     });
 }
 
 // 보관 버튼
 const storeBtn = document.getElementById('storeBtn');
 if (storeBtn) {
-    storeBtn.addEventListener('click', () => {
+    storeBtn.addEventListener('click', async () => {
         if (gameState.swordLevel === 0) {
             alert('보관할 검이 없습니다!');
             return;
         }
-        alert(`+${gameState.swordLevel} 검을 보관했습니다!`);
+        
+        const userId = localStorage.getItem('user_id');
+        if (userId && !CONFIG.TEST_MODE) {
+            try {
+                await CONFIG.supabase
+                    .from('inventory')
+                    .insert({
+                        user_id: userId,
+                        sword_level: gameState.swordLevel,
+                        sword_name: '검',
+                        rarity: 'common',
+                        in_use: false
+                    });
+                alert(`+${gameState.swordLevel} 검을 보관했습니다!`);
+            } catch (error) {
+                alert('보관 실패: ' + error.message);
+            }
+        } else {
+            alert(`+${gameState.swordLevel} 검을 보관했습니다!`);
+        }
     });
 }
 
@@ -234,7 +331,7 @@ if (backFromInventory) backFromInventory.addEventListener('click', () => showPag
 // 룰렛 스핀
 const spinBtn = document.getElementById('spinBtn');
 if (spinBtn) {
-    spinBtn.addEventListener('click', () => {
+    spinBtn.addEventListener('click', async () => {
         const betAmount = parseInt(document.getElementById('betAmount').value) || 0;
         
         if (betAmount <= 0) {
@@ -262,7 +359,7 @@ if (spinBtn) {
         wheel.style.transition = 'transform 3s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
         wheel.style.transform = `rotate(${spinAngle}deg)`;
 
-        setTimeout(() => {
+        setTimeout(async () => {
             const resultDiv = document.getElementById('rouletteResult');
             document.getElementById('resultText').textContent = spinResult.message;
             document.getElementById('resultAmount').textContent = 
@@ -270,6 +367,26 @@ if (spinBtn) {
             resultDiv.style.display = 'block';
             
             updateUI();
+            
+            // Supabase에 룰렛 기록 저장
+            const userId = localStorage.getItem('user_id');
+            if (userId && !CONFIG.TEST_MODE) {
+                try {
+                    await CONFIG.supabase
+                        .from('roulette_log')
+                        .insert({
+                            user_id: userId,
+                            bet_amount: betAmount,
+                            result_multiplier: spinResult.multiplier.replace('배', ''),
+                            win_amount: spinResult.winAmount,
+                            result_number: spinResult.spinIndex + 1
+                        });
+                    await updatePlayerStatsDB(userId);
+                } catch (error) {
+                    console.error('룰렛 기록 실패:', error);
+                }
+            }
+            
             spinBtn.disabled = false;
             document.getElementById('betAmount').value = '';
             
@@ -316,6 +433,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const userId = localStorage.getItem('user_id');
     if (userId) {
         showPage('gamePage');
+        document.getElementById('playerName').textContent = localStorage.getItem('username') || '플레이어님';
         updateUI();
+    } else {
+        showPage('loginPage');
     }
+    
+    // 디버깅
+    console.log('GameState:', gameState);
+    console.log('localStorage:', localStorage);
 });

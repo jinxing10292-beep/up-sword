@@ -146,7 +146,7 @@ if (signupForm) {
                 gold: 1000000,
                 money: 0,
                 cumulative_cost: 0
-            }).catch(err => console.log('Supabase 저장:', err));
+            }).then(() => console.log('Supabase 저장됨')).catch(err => console.log('Supabase 저장:', err));
 
             showAuthMessage('회원가입 성공! 게임 시작합니다.', 'success');
             

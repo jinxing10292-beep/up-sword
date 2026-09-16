@@ -1,222 +1,45 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>검 강화 게임 - 로그인</title>
-    <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>로그인 - 검 키우기</title>
+<link rel="stylesheet" href="auth.css">
 </head>
 <body>
-    <div class="app-container">
-        <div id="authPage" class="page active">
-            <div class="auth-container">
-                <div class="auth-header">
-                    <h1>⚔️ 검 강화 게임</h1>
-                    <p>검을 강화하고 랭킹을 올려보세요!</p>
-                </div>
+<div class="auth-container">
+    <div class="auth-box">
+        <h1>검 키우기</h1>
+        
+        <!-- 로그인 탭 -->
+        <div id="loginTab" class="tab active">
+            <h2>로그인</h2>
+            <form id="loginForm">
+                <input type="email" id="loginEmail" placeholder="이메일" required>
+                <input type="password" id="loginPassword" placeholder="비밀번호" required>
+                <button type="submit" class="btn-auth">로그인</button>
+            </form>
+            <p class="tab-switch">계정이 없으신가요? <a onclick="switchTab('signup')">회원가입</a></p>
+            <div id="loginMsg" class="msg"></div>
+        </div>
 
-                <!-- 로그인 탭 -->
-                <div id="loginTab" class="auth-tab active">
-                    <h2>로그인</h2>
-                    <form id="loginForm">
-                        <div class="form-group">
-                            <label>이메일</label>
-                            <input type="email" id="loginEmail" placeholder="example@email.com" required>
-                        </div>
-                        <div class="form-group">
-                            <label>비밀번호</label>
-                            <input type="password" id="loginPassword" placeholder="비밀번호" required>
-                        </div>
-                        <button type="submit" class="btn-primary btn-auth">로그인</button>
-                    </form>
-                    <p class="auth-switch">계정이 없으신가요? <a href="#" onclick="switchTab('signup')">회원가입</a></p>
-                </div>
-
-                <!-- 회원가입 탭 -->
-                <div id="signupTab" class="auth-tab">
-                    <h2>회원가입</h2>
-                    <form id="signupForm">
-                        <div class="form-group">
-                            <label>이메일</label>
-                            <input type="email" id="signupEmail" placeholder="example@email.com" required>
-                        </div>
-                        <div class="form-group">
-                            <label>플레이어명</label>
-                            <input type="text" id="signupUsername" placeholder="플레이어명" maxlength="20" required>
-                        </div>
-                        <div class="form-group">
-                            <label>비밀번호</label>
-                            <input type="password" id="signupPassword" placeholder="비밀번호 (8자 이상)" minlength="8" required>
-                        </div>
-                        <div class="form-group">
-                            <label>비밀번호 확인</label>
-                            <input type="password" id="signupPasswordConfirm" placeholder="비밀번호 확인" minlength="8" required>
-                        </div>
-                        <button type="submit" class="btn-primary btn-auth">회원가입</button>
-                    </form>
-                    <p class="auth-switch">이미 계정이 있으신가요? <a href="#" onclick="switchTab('login')">로그인</a></p>
-                </div>
-
-                <div id="authMessage" class="auth-message"></div>
-            </div>
+        <!-- 회원가입 탭 -->
+        <div id="signupTab" class="tab">
+            <h2>회원가입</h2>
+            <form id="signupForm">
+                <input type="email" id="signupEmail" placeholder="이메일" required>
+                <input type="text" id="signupUsername" placeholder="닉네임" required>
+                <input type="password" id="signupPassword" placeholder="비밀번호 (8자 이상)" required>
+                <input type="password" id="signupPasswordConfirm" placeholder="비밀번호 확인" required>
+                <button type="submit" class="btn-auth">회원가입</button>
+            </form>
+            <p class="tab-switch">이미 계정이 있으신가요? <a onclick="switchTab('login')">로그인</a></p>
+            <div id="signupMsg" class="msg"></div>
         </div>
     </div>
+</div>
 
-    <style>
-        .auth-container {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            height: 100%;
-            padding: 20px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        }
-
-        .auth-header {
-            text-align: center;
-            color: white;
-            margin-bottom: 40px;
-        }
-
-        .auth-header h1 {
-            font-size: 36px;
-            margin-bottom: 10px;
-        }
-
-        .auth-header p {
-            font-size: 14px;
-            opacity: 0.9;
-        }
-
-        .auth-tab {
-            display: none;
-            background: white;
-            border-radius: 15px;
-            padding: 30px;
-            width: 100%;
-            max-width: 350px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
-        }
-
-        .auth-tab.active {
-            display: block;
-        }
-
-        .auth-tab h2 {
-            font-size: 20px;
-            margin-bottom: 20px;
-            text-align: center;
-        }
-
-        .form-group {
-            margin-bottom: 15px;
-        }
-
-        .form-group label {
-            display: block;
-            font-size: 12px;
-            font-weight: 600;
-            margin-bottom: 5px;
-            color: #333;
-        }
-
-        .form-group input {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            font-size: 14px;
-            outline: none;
-            transition: border-color 0.3s;
-        }
-
-        .form-group input:focus {
-            border-color: #667eea;
-        }
-
-        .btn-auth {
-            width: 100%;
-            padding: 12px;
-            font-size: 14px;
-            margin-top: 10px;
-        }
-
-        .auth-switch {
-            text-align: center;
-            font-size: 12px;
-            margin-top: 15px;
-            color: #666;
-        }
-
-        .auth-switch a {
-            color: #667eea;
-            cursor: pointer;
-            text-decoration: none;
-            font-weight: 600;
-        }
-
-        .auth-message {
-            margin-top: 15px;
-            padding: 10px;
-            border-radius: 8px;
-            text-align: center;
-            font-size: 12px;
-            display: none;
-        }
-
-        .auth-message.success {
-            background: #d4edda;
-            color: #155724;
-            display: block;
-        }
-
-        .auth-message.error {
-            background: #f8d7da;
-            color: #721c24;
-            display: block;
-        }
-    </style>
-
-    <script>
-        function switchTab(tab) {
-            document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
-            document.getElementById(tab === 'login' ? 'loginTab' : 'signupTab').classList.add('active');
-        }
-
-        // 로그인 폼
-        document.getElementById('loginForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const email = document.getElementById('loginEmail').value;
-            const password = document.getElementById('loginPassword').value;
-            
-            // TODO: Supabase 연동 후 실제 로그인 처리
-            showMessage('로그인 기능은 준비 중입니다.', 'error');
-        });
-
-        // 회원가입 폼
-        document.getElementById('signupForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const email = document.getElementById('signupEmail').value;
-            const username = document.getElementById('signupUsername').value;
-            const password = document.getElementById('signupPassword').value;
-            const confirm = document.getElementById('signupPasswordConfirm').value;
-
-            if (password !== confirm) {
-                showMessage('비밀번호가 일치하지 않습니다.', 'error');
-                return;
-            }
-
-            // TODO: Supabase 연동 후 실제 회원가입 처리
-            showMessage('회원가입 기능은 준비 중입니다.', 'error');
-        });
-
-        function showMessage(msg, type) {
-            const msgDiv = document.getElementById('authMessage');
-            msgDiv.textContent = msg;
-            msgDiv.className = `auth-message ${type}`;
-            setTimeout(() => msgDiv.className = 'auth-message', 3000);
-        }
-    </script>
+<script src="config.js"></script>
+<script src="auth.js"></script>
 </body>
 </html>

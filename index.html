@@ -1,203 +1,74 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>검 강화 게임</title>
-    <link rel="stylesheet" href="style.css">
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.0.0"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>검 키우기 게임</title>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="app-container">
-        <!-- 로그인/회원가입 페이지 -->
-        <div id="authPage" class="page active">
-            <div class="auth-container">
-                <h1>⚔️ 검 강화 게임</h1>
-                
-                <div id="loginTab" class="auth-tab active">
-                    <h2>로그인</h2>
-                    <form id="loginForm">
-                        <input type="email" id="loginEmail" placeholder="이메일" required>
-                        <input type="password" id="loginPassword" placeholder="비밀번호" required>
-                        <button type="submit" class="btn-auth">로그인</button>
-                    </form>
-                    <p class="tab-link">계정이 없으신가요? <a href="#" onclick="switchTab('signup'); return false;">회원가입</a></p>
-                </div>
+<div class="screen">
 
-                <div id="signupTab" class="auth-tab">
-                    <h2>회원가입</h2>
-                    <form id="signupForm">
-                        <input type="email" id="signupEmail" placeholder="이메일" required>
-                        <input type="text" id="signupUsername" placeholder="플레이어명" maxlength="20" required>
-                        <input type="password" id="signupPassword" placeholder="비밀번호 (8자 이상)" minlength="8" required>
-                        <input type="password" id="signupPasswordConfirm" placeholder="비밀번호 확인" minlength="8" required>
-                        <button type="submit" class="btn-auth">회원가입</button>
-                    </form>
-                    <p class="tab-link">이미 계정이 있으신가요? <a href="#" onclick="switchTab('login'); return false;">로그인</a></p>
-                </div>
-
-                <div id="authMessage" class="auth-message"></div>
-            </div>
-        </div>
-
-        <!-- 게임 메인 페이지 -->
-        <div id="gamePage" class="page">
-            <div class="game-container">
-                <!-- 플레이어 정보 -->
-                <div class="info-box player-box">
-                    <div class="player-header">
-                        <h2 id="playerName">플레이어님</h2>
-                        <button class="btn-logout" id="logoutBtn">로그아웃</button>
-                    </div>
-                    <div class="resources">
-                        <p><span class="label">GOLD:</span><span class="value gold" id="goldDisplay">0</span><span>G</span></p>
-                        <p><span class="label">MONEY:</span><span class="value money" id="moneyDisplay">0</span><span>M</span></p>
-                    </div>
-                </div>
-
-                <!-- 메뉴 버튼 -->
-                <div class="info-box menu-box">
-                    <div class="menu-row">
-                        <button class="menu-item" id="rankingBtn">랭킹</button>
-                        <button class="menu-item" id="checkBtn">출석체크</button>
-                    </div>
-                    <div class="menu-row">
-                        <button class="menu-item pink" id="battleBtn">배틀</button>
-                        <button class="menu-item purple" id="gmBtn">GM</button>
-                    </div>
-                </div>
-
-                <!-- 추가 메뉴 -->
-                <div class="info-box extra-menu">
-                    <button class="menu-item" id="inventoryBtn">인벤토리</button>
-                    <button class="menu-item" id="equipBtn">도감</button>
-                </div>
-
-                <!-- 메인 콘텐츠 (강화 + 룰렛) -->
-                <div class="content-row">
-                    <!-- 검 강화 -->
-                    <div class="info-box card-half upgrade-card">
-                        <h3>🗡️ 검 강화</h3>
-                        <p class="level-display">강화도: <span id="swordLevel">+0</span></p>
-                        <button class="btn-enter" id="upgradeBtn">강화하기</button>
-                    </div>
-
-                    <!-- 룰렛 -->
-                    <div class="info-box card-half roulette-card">
-                        <h3>🎡 룰렛</h3>
-                        <p class="level-display">골드 도박</p>
-                        <button class="btn-enter" id="rouletteBtn">스핀</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- 강화 페이지 -->
-        <div id="upgradePage" class="page">
-            <div class="page-header">
-                <button class="btn-back" id="backFromUpgrade">←</button>
-                <h2>검 강화</h2>
-            </div>
-
-            <div class="page-container">
-                <div class="info-box">
-                    <h3>검 상태</h3>
-                    <div class="sword-info">
-                        <p>🗡️ 강화 단계: <strong id="displayLevel">+0</strong></p>
-                    </div>
-                </div>
-
-                <div class="info-box">
-                    <h3>강화 확률</h3>
-                    <div class="stats-box">
-                        <p><span>성공:</span><span id="successRate">100%</span></p>
-                        <p><span>유지:</span><span id="maintainRate">0%</span></p>
-                        <p><span>파괴:</span><span id="breakRate">0%</span></p>
-                        <p class="cost"><span>비용:</span><span id="costAmount">100</span>G</p>
-                    </div>
-                </div>
-
-                <div id="resultMessage" class="result-message" style="display: none;">
-                    <p id="resultText"></p>
-                </div>
-
-                <button class="btn-main" id="enhanceBtn">강화하기</button>
-                <button class="btn-main btn-sell" id="sellBtn">판매하기</button>
-                <button class="btn-main btn-store" id="storeBtn">보관하기</button>
-
-                <div class="cumulative-info">
-                    <p>누적 비용: <span id="cumulativeCost">0</span>G</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- 룰렛 페이지 -->
-        <div id="roulettePage" class="page">
-            <div class="page-header">
-                <button class="btn-back" id="backFromRoulette">←</button>
-                <h2>룰렛</h2>
-            </div>
-
-            <div class="page-container">
-                <div class="roulette-section">
-                    <div class="roulette-wheel-wrapper">
-                        <div class="roulette-wheel" id="rouletteWheel"></div>
-                        <div class="roulette-pointer">▼</div>
-                    </div>
-                </div>
-
-                <div class="info-box">
-                    <p class="bet-info">골드: <span id="rouletteGold">0</span>G</p>
-                    
-                    <div class="bet-input-group">
-                        <input type="number" id="betAmount" placeholder="베팅 금액" min="1">
-                    </div>
-
-                    <div class="quick-bets">
-                        <button class="quick-bet" data-amount="1000">1K</button>
-                        <button class="quick-bet" data-amount="10000">10K</button>
-                        <button class="quick-bet" data-amount="100000">100K</button>
-                        <button class="quick-bet" data-amount="1000000">1M</button>
-                    </div>
-
-                    <button class="btn-main btn-spin" id="spinBtn">스핀</button>
-                </div>
-
-                <div id="rouletteResult" class="result-message" style="display: none;">
-                    <p id="resultText"></p>
-                    <p id="resultAmount"></p>
-                </div>
-            </div>
-        </div>
-
-        <!-- 랭킹 페이지 -->
-        <div id="rankingPage" class="page">
-            <div class="page-header">
-                <button class="btn-back" id="backFromRanking">←</button>
-                <h2>🏆 랭킹</h2>
-            </div>
-
-            <div class="page-container">
-                <div id="rankingList" class="ranking-list"></div>
-            </div>
-        </div>
-
-        <!-- 인벤토리 페이지 -->
-        <div id="inventoryPage" class="page">
-            <div class="page-header">
-                <button class="btn-back" id="backFromInventory">←</button>
-                <h2>인벤토리</h2>
-            </div>
-
-            <div class="page-container">
-                <div id="inventoryList" class="inventory-list"></div>
-            </div>
-        </div>
+  <!-- 프로필 카드 -->
+  <div class="profile-card">
+    <div class="profile-top">
+      <div class="greeting">플레이어님<br>안녕하세요!</div>
+      <div class="avatar">
+        <svg viewBox="0 0 24 24"><path d="M12 12c2.7 0 4.9-2.2 4.9-4.9S14.7 2.2 12 2.2 7.1 4.4 7.1 7.1 9.3 12 12 12zm0 2.5c-3.3 0-9.9 1.7-9.9 5v2.3h19.8V19.5c0-3.3-6.6-5-9.9-5z"/></svg>
+      </div>
     </div>
 
-    <script src="config.js"></script>
-    <script src="data.js"></script>
-    <script src="auth.js"></script>
-    <script src="script.js"></script>
+    <div class="stat-box">
+      <div class="row">GOLD:<span class="gold">0</span>G</div>
+      <div class="row">MONEY:<span class="money">0</span>M</div>
+    </div>
+  </div>
+
+  <!-- 메뉴 카드 1 -->
+  <div class="menu-card">
+    <div class="menu-grid">
+      <button class="menu-btn">랭킹</button>
+      <button class="menu-btn">출석체크</button>
+      <button class="menu-btn battle">배틀</button>
+      <button class="menu-btn gm">GM</button>
+    </div>
+  </div>
+
+  <!-- 메뉴 카드 2 -->
+  <div class="menu-card">
+    <div class="menu-grid">
+      <button class="menu-btn">인벤토리</button>
+      <button class="menu-btn">상점</button>
+      <button class="menu-btn">업적</button>
+      <button class="menu-btn">검도감</button>
+    </div>
+  </div>
+
+  <!-- 프로모 카드 -->
+  <div class="promo-row">
+    <div class="promo-card sword">
+      <div class="ribbon">NEW</div>
+      <div class="promo-title">Sword<br>Upgrade</div>
+      <div class="promo-sub">강화로 검을 성장시키세요!</div>
+      <div class="promo-icon">🗡️</div>
+    </div>
+    <div class="promo-card soon">
+      <div class="ribbon">NEW</div>
+      <div class="exclaim">!</div>
+      <div class="promo-title small">roulette</div>
+      <div class="promo-sub">행운의 룰렛을 돌려보세요!</div>
+    </div>
+  </div>
+
+  <!-- 하단 버튼 -->
+  <div class="footer-row">
+    <div class="footer-btn">고객센터</div>
+    <div class="footer-btn">사이트맵</div>
+  </div>
+
+</div>
+
+<script src="config.js"></script>
+<script src="script.js"></script>
 </body>
 </html>

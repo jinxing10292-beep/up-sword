@@ -1,710 +1,198 @@
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-body {
-    font-family: 'Arial', sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    min-height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.app-container {
-    width: 100%;
-    max-width: 500px;
-    background: white;
-    border-radius: 30px;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
-    overflow: hidden;
-    min-height: 600px;
-}
-
-.page {
-    display: none;
-    animation: slideIn 0.3s ease-in-out;
-}
-
-.page.active {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-}
-
-@keyframes slideIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-}
-
-/* ===== 로그인/회원가입 페이지 ===== */
-#authPage {
-    display: flex !important;
-    justify-content: center;
-    align-items: center;
-    padding: 20px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    min-height: 100vh;
-}
-
-.auth-container {
-    background: white;
-    padding: 40px 30px;
-    border-radius: 25px;
-    width: 100%;
-    max-width: 400px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-}
-
-.auth-container h1 {
-    text-align: center;
-    color: #333;
-    margin-bottom: 30px;
-    font-size: 28px;
-}
-
-.auth-tab {
-    display: none;
-}
-
-.auth-tab.active {
-    display: block;
-}
-
-.auth-tab h2 {
-    color: #667eea;
-    margin-bottom: 20px;
-    font-size: 20px;
-}
-
-.auth-tab form {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-}
-
-.auth-tab input {
-    padding: 12px;
-    border: 2px solid #e0e0e0;
-    border-radius: 15px;
-    font-size: 14px;
-    transition: border-color 0.3s;
-}
-
-.auth-tab input:focus {
-    outline: none;
-    border-color: #667eea;
-}
-
-.btn-auth {
-    padding: 12px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    border: none;
-    border-radius: 15px;
-    font-size: 16px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: transform 0.2s;
-}
-
-.btn-auth:hover {
-    transform: translateY(-2px);
-}
-
-.tab-link {
-    text-align: center;
-    margin-top: 15px;
-    color: #666;
-    font-size: 14px;
-}
-
-.tab-link a {
-    color: #667eea;
-    text-decoration: none;
-    font-weight: bold;
-    cursor: pointer;
-}
-
-.auth-message {
-    margin-top: 15px;
-    padding: 12px;
-    border-radius: 15px;
-    text-align: center;
-    display: none;
-    font-size: 14px;
-}
-
-.auth-message.success {
-    display: block;
-    background: #d4edda;
-    color: #155724;
-    border: 1px solid #c3e6cb;
-}
-
-.auth-message.error {
-    display: block;
-    background: #f8d7da;
-    color: #721c24;
-    border: 1px solid #f5c6cb;
-}
-
-/* ===== 게임 페이지 ===== */
-#gamePage {
-    padding: 20px;
-    background: white;
-    flex: 1;
-    overflow-y: auto;
-}
-
-.game-container {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-}
-
-.info-box {
-    background: #f5f5f5;
-    border: 2px solid #e0e0e0;
-    border-radius: 20px;
-    padding: 15px;
-}
-
-.player-box {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    border: none;
-}
-
-.player-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 10px;
-}
-
-.player-header h2 {
-    font-size: 18px;
-}
-
-.btn-logout {
-    background: rgba(255, 255, 255, 0.3);
-    border: 1px solid white;
-    color: white;
-    padding: 6px 12px;
-    border-radius: 12px;
-    cursor: pointer;
-    font-size: 12px;
-}
-
-.btn-logout:hover {
-    background: rgba(255, 255, 255, 0.5);
-}
-
-.resources {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
-.resources p {
-    display: flex;
-    justify-content: space-between;
-    font-size: 14px;
-}
-
-.label {
-    font-weight: bold;
-}
-
-.value {
-    font-weight: bold;
-    margin: 0 5px;
-}
-
-.value.gold {
-    color: #ffd700;
-}
-
-.value.money {
-    color: #00ff00;
-}
-
-/* 메뉴 박스 */
-.menu-box {
-    background: white;
-}
-
-.menu-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-}
-
-.menu-row + .menu-row {
-    margin-top: 10px;
-}
-
-.menu-item {
-    padding: 15px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    border: none;
-    border-radius: 15px;
-    font-size: 14px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: transform 0.2s;
-}
-
-.menu-item:hover {
-    transform: translateY(-3px);
-}
-
-.menu-item.pink {
-    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-}
-
-.menu-item.purple {
-    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-}
-
-/* 추가 메뉴 */
-.extra-menu {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-    background: white;
-}
-
-.extra-menu .menu-item {
-    padding: 12px;
-    font-size: 13px;
-}
-
-/* 메인 콘텐츠 */
-.content-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 15px;
-    margin-top: 10px;
-}
-
-.card-half {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    text-align: center;
-}
-
-.card-half h3 {
-    font-size: 18px;
-    margin-bottom: 10px;
-}
-
-.level-display {
-    font-size: 14px;
-    margin-bottom: 10px;
-    opacity: 0.9;
-}
-
-.btn-enter {
-    background: rgba(255, 255, 255, 0.3);
-    border: 2px solid white;
-    color: white;
-    padding: 10px;
-    border-radius: 12px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: all 0.2s;
-}
-
-.btn-enter:hover {
-    background: white;
-    color: #667eea;
-}
-
-/* ===== 페이지 공통 ===== */
-.page-header {
-    display: flex;
-    align-items: center;
-    padding: 15px 20px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    gap: 15px;
-    border-bottom: 1px solid #e0e0e0;
-    border-radius: 30px 30px 0 0;
-}
-
-.btn-back {
-    background: none;
-    border: none;
-    color: white;
-    font-size: 24px;
-    cursor: pointer;
-}
-
-.page-header h2 {
-    flex: 1;
-    text-align: center;
-}
-
-.page-container {
-    flex: 1;
-    overflow-y: auto;
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-}
-
-/* ===== 강화 페이지 ===== */
-.sword-info {
-    background: white;
-    padding: 15px;
-    border-radius: 15px;
-    margin-bottom: 10px;
-}
-
-.sword-info p {
-    display: flex;
-    justify-content: space-between;
-    font-size: 16px;
-    margin: 5px 0;
-}
-
-.stats-box {
-    background: white;
-    padding: 15px;
-    border-radius: 15px;
-}
-
-.stats-box p {
-    display: flex;
-    justify-content: space-between;
-    margin: 8px 0;
-    font-size: 14px;
-}
-
-.stats-box p.cost {
-    font-weight: bold;
-    border-top: 1px solid #e0e0e0;
-    padding-top: 8px;
-    margin-top: 8px;
-}
-
-.result-message {
-    padding: 15px;
-    border-radius: 15px;
-    text-align: center;
-    font-weight: bold;
-    display: none;
-    margin: 10px 0;
-}
-
-.result-message.success {
-    background: #d4edda;
-    color: #155724;
-    border: 2px solid #28a745;
-}
-
-.result-message.maintain {
-    background: #fff3cd;
-    color: #856404;
-    border: 2px solid #ffc107;
-}
-
-.result-message.break {
-    background: #f8d7da;
-    color: #721c24;
-    border: 2px solid #dc3545;
-}
-
-.btn-main {
-    padding: 15px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    border: none;
-    border-radius: 15px;
-    font-size: 16px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: transform 0.2s;
-}
-
-.btn-main:hover {
-    transform: translateY(-2px);
-}
-
-.btn-sell {
-    background: linear-gradient(135deg, #f5576c 0%, #f093fb 100%);
-}
-
-.btn-store {
-    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-}
-
-.cumulative-info {
-    text-align: center;
-    padding: 10px;
-    background: #f5f5f5;
-    border-radius: 15px;
-    font-size: 14px;
-    color: #333;
-}
-
-/* ===== 룰렛 페이지 ===== */
-.roulette-section {
-    display: flex;
-    justify-content: center;
-    padding: 20px 0;
-}
-
-.roulette-wheel-wrapper {
-    position: relative;
-    width: 280px;
-    height: 280px;
-    margin: 0 auto;
-}
-
-.roulette-wheel {
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
-    background: conic-gradient(
-        from 0deg,
-        #ff6b6b 0deg 7.83deg,
-        #4ecdc4 7.83deg 15.65deg,
-        #45b7d1 15.65deg 23.48deg,
-        #96ceb4 23.48deg 31.3deg,
-        #ffeaa7 31.3deg 39.13deg,
-        #dfe6e9 39.13deg 46.96deg,
-        #a29bfe 46.96deg 54.78deg,
-        #fd79a8 54.78deg 62.61deg,
-        #74b9ff 62.61deg 70.43deg,
-        #fab1a0 70.43deg 78.26deg,
-        #55efc4 78.26deg 86.09deg,
-        #ff7675 86.09deg 93.91deg,
-        #fdcb6e 93.91deg 101.74deg,
-        #6c5ce7 101.74deg 109.57deg,
-        #00b894 109.57deg 117.39deg,
-        #0984e3 117.39deg 125.22deg,
-        #e17055 125.22deg 133.04deg,
-        #74b9ff 133.04deg 140.87deg,
-        #fab1a0 140.87deg 148.7deg,
-        #55efc4 148.7deg 156.52deg,
-        #ff7675 156.52deg 164.35deg,
-        #fdcb6e 164.35deg 172.17deg,
-        #6c5ce7 172.17deg 180deg,
-        #00b894 180deg 187.83deg,
-        #0984e3 187.83deg 195.65deg,
-        #e17055 195.65deg 203.48deg,
-        #74b9ff 203.48deg 211.3deg,
-        #fab1a0 211.3deg 219.13deg,
-        #55efc4 219.13deg 226.96deg,
-        #ff7675 226.96deg 234.78deg,
-        #fdcb6e 234.78deg 242.61deg,
-        #6c5ce7 242.61deg 250.43deg,
-        #00b894 250.43deg 258.26deg,
-        #0984e3 258.26deg 266.09deg,
-        #e17055 266.09deg 273.91deg,
-        #74b9ff 273.91deg 281.74deg,
-        #fab1a0 281.74deg 289.57deg,
-        #55efc4 289.57deg 297.39deg,
-        #ff7675 297.39deg 305.22deg,
-        #fdcb6e 305.22deg 313.04deg,
-        #6c5ce7 313.04deg 320.87deg,
-        #00b894 320.87deg 328.7deg,
-        #0984e3 328.7deg 336.52deg,
-        #e17055 336.52deg 344.35deg,
-        #74b9ff 344.35deg 352.17deg,
-        #fab1a0 352.17deg 360deg
-    );
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: bold;
-    color: white;
-    font-size: 10px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-    border: 4px solid white;
-}
-
-.roulette-pointer {
-    position: absolute;
-    top: -20px;
-    left: 50%;
-    transform: translateX(-50%);
-    font-size: 30px;
-    z-index: 10;
-}
-
-.bet-info {
-    text-align: center;
-    font-size: 16px;
-    font-weight: bold;
-    color: #333;
-}
-
-.bet-input-group {
-    margin: 15px 0;
-}
-
-.bet-input-group input {
-    width: 100%;
-    padding: 12px;
-    border: 2px solid #e0e0e0;
-    border-radius: 15px;
-    font-size: 14px;
-}
-
-.bet-input-group input:focus {
-    outline: none;
-    border-color: #667eea;
-}
-
-.quick-bets {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr 1fr;
-    gap: 8px;
-    margin: 10px 0;
-}
-
-.quick-bet {
-    padding: 10px;
-    background: #f0f0f0;
-    border: 2px solid #e0e0e0;
-    border-radius: 12px;
-    cursor: pointer;
-    font-weight: bold;
-    transition: all 0.2s;
-}
-
-.quick-bet:hover {
-    background: #667eea;
-    color: white;
-    border-color: #667eea;
-}
-
-.btn-spin {
-    background: linear-gradient(135deg, #ffd89b 0%, #ff7e5f 100%);
-    font-size: 18px;
-    padding: 15px;
-}
-
-.btn-spin:hover {
-    transform: translateY(-2px);
-}
-
-/* ===== 랭킹 페이지 ===== */
-.ranking-list {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-.ranking-item {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    background: white;
-    padding: 15px;
-    border-radius: 15px;
-    border: 2px solid #e0e0e0;
-}
-
-.ranking-item.top-1 {
-    background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
-    border-color: #ffd700;
-}
-
-.ranking-item.top-2 {
-    background: linear-gradient(135deg, #c0c0c0 0%, #e8e8e8 100%);
-    border-color: #c0c0c0;
-}
-
-.ranking-item.top-3 {
-    background: linear-gradient(135deg, #cd7f32 0%, #e8b17e 100%);
-    border-color: #cd7f32;
-}
-
-.rank-badge {
-    font-size: 24px;
-    min-width: 40px;
-    text-align: center;
-}
-
-.ranking-name {
-    font-weight: bold;
-    font-size: 16px;
-    color: #333;
-}
-
-.ranking-stats {
-    font-size: 12px;
-    color: #666;
-}
-
-/* ===== 인벤토리 페이지 ===== */
-.inventory-list {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-.inventory-item {
-    background: white;
-    padding: 15px;
-    border-radius: 15px;
-    border: 2px solid #e0e0e0;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.inventory-info {
-    flex: 1;
-}
-
-.inventory-name {
-    font-weight: bold;
-    font-size: 14px;
-}
-
-.inventory-level {
-    font-size: 12px;
-    color: #666;
-}
-
-.inventory-btn {
-    padding: 8px 12px;
-    background: #667eea;
-    color: white;
-    border: none;
-    border-radius: 12px;
-    cursor: pointer;
-    font-size: 12px;
-}
-
-/* ===== 반응형 ===== */
-@media (max-width: 480px) {
-    .app-container {
-        max-width: 100%;
-        min-height: 100vh;
-        border-radius: 0;
-    }
-
-    .auth-container {
-        border-radius: 0;
-    }
-
-    .content-row {
-        grid-template-columns: 1fr;
-    }
-
-    .roulette-wheel-wrapper {
-        width: 240px;
-        height: 240px;
-    }
-}
+:root{
+    --bg: #f2f2f2;
+    --card-border: #111;
+    --pill-bg: #e9e9e9;
+    --pill-text: #111;
+    --gold: #f5a623;
+    --money: #7b5bd6;
+    --battle: #f28b82;
+    --gm: #b39ddb;
+    --link-blue: #2979ff;
+  }
+  *{ box-sizing: border-box; }
+  body{
+    margin:0;
+    background: var(--bg);
+    font-family: "Apple SD Gothic Neo","Malgun Gothic","Segoe UI",sans-serif;
+    display:flex;
+    justify-content:center;
+  }
+  .screen{
+    width:100%;
+    max-width:430px;
+    min-height:100vh;
+    background:var(--bg);
+    padding:20px 18px 60px;
+  }
+
+  /* profile card */
+  .profile-card{
+    background:#fff;
+    border:3px solid var(--card-border);
+    border-radius:28px;
+    padding:26px 22px;
+    margin-bottom:18px;
+  }
+  .profile-top{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+  }
+  .greeting{
+    font-size:26px;
+    font-weight:800;
+    line-height:1.3;
+    color:#111;
+  }
+  .avatar{
+    width:76px;
+    height:76px;
+    border-radius:50%;
+    background:#111;
+    border:3px solid #ddd;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-shrink:0;
+  }
+  .avatar svg{ width:40px; height:40px; fill:#fff; }
+
+  .stat-box{
+    background:var(--pill-bg);
+    border-radius:16px;
+    padding:16px 18px;
+    margin-top:20px;
+    font-size:22px;
+    font-weight:800;
+    color:#111;
+  }
+  .stat-box .row + .row{ margin-top:6px; }
+  .stat-box .gold{ color: var(--gold); }
+  .stat-box .money{ color: var(--money); }
+
+  .button-row{
+    display:flex;
+    gap:12px;
+    margin-top:16px;
+  }
+  .pill-btn{
+    flex:1;
+    background:var(--pill-bg);
+    border:none;
+    border-radius:999px;
+    padding:16px 10px;
+    font-size:18px;
+    font-weight:700;
+    color:var(--link-blue);
+    text-align:center;
+    cursor:pointer;
+  }
+
+  /* menu card with 2x2 grid */
+  .menu-card{
+    background:#fff;
+    border:3px solid var(--card-border);
+    border-radius:28px;
+    padding:16px;
+    margin-bottom:18px;
+  }
+  .menu-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:12px;
+  }
+  .menu-btn{
+    background:var(--pill-bg);
+    border:none;
+    border-radius:999px;
+    padding:18px 10px;
+    font-size:19px;
+    font-weight:700;
+    color:#333;
+    text-align:center;
+    cursor:pointer;
+  }
+  .menu-btn.battle{ background:var(--battle); color:#fff; }
+  .menu-btn.gm{ background:var(--gm); color:#111; }
+
+  /* promo cards */
+  .promo-row{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:14px;
+    margin-bottom:18px;
+  }
+  .promo-card{
+    position:relative;
+    border-radius:20px;
+    padding:20px 16px;
+    min-height:220px;
+    overflow:hidden;
+  }
+  .promo-card.sword{ background:#c9caf5; }
+  .promo-card.soon{ background:#bdbdbd; }
+
+  .ribbon{
+    position:absolute;
+    top:14px;
+    left:-34px;
+    width:130px;
+    background:#ffc107;
+    color:#111;
+    font-weight:800;
+    font-size:13px;
+    text-align:center;
+    padding:4px 0;
+    transform:rotate(-40deg);
+  }
+
+  .promo-title{
+    font-size:26px;
+    font-weight:800;
+    color:#111;
+    margin:6px 0 6px;
+    line-height:1.15;
+  }
+  .promo-title.small{ font-size:30px; }
+  .promo-sub{
+    font-size:14px;
+    color:#222;
+    font-weight:600;
+  }
+  .promo-icon{
+    display:flex;
+    justify-content:center;
+    margin-top:22px;
+    font-size:56px;
+  }
+  .exclaim{
+    width:54px;
+    height:54px;
+    border-radius:50%;
+    background:#c9caf5;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-weight:900;
+    font-size:30px;
+    color:#111;
+    margin:8px auto 14px;
+  }
+  .promo-card.soon .promo-title{ text-align:center; }
+  .promo-card.soon .promo-sub{ text-align:center; }
+
+  /* footer buttons */
+  .footer-row{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:14px;
+  }
+  .footer-btn{
+    background:#c9caf5;
+    border-radius:16px;
+    padding:26px 10px;
+    text-align:center;
+    font-weight:800;
+    font-size:16px;
+    color:#111;
+  }

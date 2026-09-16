@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>출석 체크 - 검 키우기</title>
+<link rel="stylesheet" href="page.css">
+</head>
+<body>
+<div class="screen">
+    <div class="page-header">
+        <a href="index.html" class="back-btn">←</a>
+        <h1>출석 체크</h1>
+    </div>
+
+    <div class="page-content">
+        <div class="attendance-box">
+            <div class="attendance-status">
+                <div class="status-title">오늘 출석 상태</div>
+                <div id="statusText" class="status-text">확인 중...</div>
+            </div>
+
+            <div class="reward-info">
+                <div class="reward-item">
+                    <span>💰 골드</span>
+                    <span>100,000 G</span>
+                </div>
+                <div class="reward-item">
+                    <span>💎 머니</span>
+                    <span>100 M</span>
+                </div>
+            </div>
+
+            <button id="checkInBtn" class="btn-checkin">출석 체크</button>
+            <div id="attendanceMsg" class="msg"></div>
+        </div>
+    </div>
+</div>
+
+<script src="config.js"></script>
+<script src="attendance.js"></script>
+</body>
+</html>

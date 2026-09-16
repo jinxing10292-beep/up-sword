@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>인벤토리 - 검 키우기</title>
+<link rel="stylesheet" href="page.css">
+<style>
+.inventory-section {
+    background: white;
+    border: 3px solid #111;
+    border-radius: 28px;
+    padding: 25px;
+    margin-bottom: 20px;
+}
+
+.inventory-tabs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.tab-btn {
+    padding: 12px;
+    background: #f5f5f5;
+    border: none;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.tab-btn.active {
+    background: #667eea;
+    color: white;
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+.inventory-item {
+    background: #f5f5f5;
+    border-radius: 16px;
+    padding: 15px;
+    margin-bottom: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.item-info h3 {
+    font-size: 14px;
+    font-weight: 700;
+    color: #111;
+    margin-bottom: 5px;
+}
+
+.item-info p {
+    font-size: 12px;
+    color: #666;
+}
+
+.item-action {
+    display: flex;
+    gap: 8px;
+}
+
+.item-btn {
+    padding: 8px 12px;
+    background: #667eea;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.item-btn:hover {
+    opacity: 0.8;
+}
+
+.empty-message {
+    text-align: center;
+    padding: 30px;
+    color: #999;
+    font-size: 14px;
+}
+</style>
+</head>
+<body>
+<div class="screen">
+    <div class="page-header">
+        <a href="game.html" class="back-btn">←</a>
+        <h1>인벤토리</h1>
+    </div>
+
+    <div class="page-content">
+        <div class="inventory-section">
+            <div class="inventory-tabs">
+                <button class="tab-btn active" onclick="switchTab('items')">보유 아이템</button>
+                <button class="tab-btn" onclick="switchTab('storage')">보관함</button>
+            </div>
+
+            <!-- 보유 아이템 탭 -->
+            <div id="items" class="tab-content active">
+                <div id="itemsList"></div>
+            </div>
+
+            <!-- 보관함 탭 -->
+            <div id="storage" class="tab-content">
+                <div id="storageList"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="config.js"></script>
+<script src="inventory.js"></script>
+</body>
+</html>

@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>룰렛 - 검 키우기</title>
+<link rel="stylesheet" href="page.css">
+<style>
+.roulette-section {
+    background: white;
+    border: 3px solid #111;
+    border-radius: 28px;
+    padding: 25px;
+    margin-bottom: 20px;
+}
+
+.roulette-wheel-container {
+    position: relative;
+    width: 280px;
+    height: 280px;
+    margin: 0 auto 25px;
+}
+
+.roulette-wheel {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    border: 4px solid #111;
+    position: relative;
+    overflow: hidden;
+    background: conic-gradient(
+        from 0deg,
+        #ff6b6b 0deg 7.83deg,
+        #4ecdc4 7.83deg 15.65deg,
+        #45b7d1 15.65deg 23.48deg,
+        #96ceb4 23.48deg 31.3deg,
+        #ffeaa7 31.3deg 39.13deg,
+        #dfe6e9 39.13deg 46.96deg,
+        #a29bfe 46.96deg 54.78deg,
+        #fd79a8 54.78deg 62.61deg,
+        #74b9ff 62.61deg 70.43deg,
+        #fab1a0 70.43deg 78.26deg,
+        #55efc4 78.26deg 86.09deg,
+        #ff7675 86.09deg 93.91deg,
+        #fdcb6e 93.91deg 101.74deg,
+        #6c5ce7 101.74deg 109.57deg,
+        #00b894 109.57deg 117.39deg,
+        #0984e3 117.39deg 125.22deg,
+        #e17055 125.22deg 133.04deg,
+        #74b9ff 133.04deg 140.87deg,
+        #fab1a0 140.87deg 148.7deg,
+        #55efc4 148.7deg 156.52deg,
+        #ff7675 156.52deg 164.35deg,
+        #fdcb6e 164.35deg 172.17deg,
+        #6c5ce7 172.17deg 180deg,
+        #00b894 180deg 187.83deg,
+        #0984e3 187.83deg 195.65deg,
+        #e17055 195.65deg 203.48deg,
+        #74b9ff 203.48deg 211.3deg,
+        #fab1a0 211.3deg 219.13deg,
+        #55efc4 219.13deg 226.96deg,
+        #ff7675 226.96deg 234.78deg,
+        #fdcb6e 234.78deg 242.61deg,
+        #6c5ce7 242.61deg 250.43deg,
+        #00b894 250.43deg 258.26deg,
+        #0984e3 258.26deg 266.09deg,
+        #e17055 266.09deg 273.91deg,
+        #74b9ff 273.91deg 281.74deg,
+        #fab1a0 281.74deg 289.57deg,
+        #55efc4 289.57deg 297.39deg,
+        #ff7675 297.39deg 305.22deg,
+        #fdcb6e 305.22deg 313.04deg,
+        #6c5ce7 313.04deg 320.87deg,
+        #00b894 320.87deg 328.7deg,
+        #0984e3 328.7deg 336.52deg,
+        #e17055 336.52deg 344.35deg,
+        #74b9ff 344.35deg 352.17deg,
+        #fab1a0 352.17deg 360deg
+    );
+}
+
+.roulette-pointer {
+    position: absolute;
+    top: -15px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 30px;
+    z-index: 10;
+}
+
+.bet-section {
+    background: #f5f5f5;
+    border-radius: 16px;
+    padding: 20px;
+    margin: 20px 0;
+}
+
+.bet-label {
+    font-size: 14px;
+    font-weight: 700;
+    color: #666;
+    margin-bottom: 10px;
+}
+
+.bet-input {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #ddd;
+    border-radius: 12px;
+    font-size: 14px;
+    margin-bottom: 15px;
+    font-weight: 700;
+}
+
+.quick-bets {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 15px;
+}
+
+.quick-bet {
+    padding: 10px;
+    background: white;
+    border: 2px solid #ddd;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.quick-bet:hover {
+    background: #667eea;
+    color: white;
+    border-color: #667eea;
+}
+
+.current-gold {
+    font-size: 14px;
+    color: #666;
+    margin-top: 10px;
+}
+
+.btn-spin {
+    width: 100%;
+    padding: 16px;
+    background: linear-gradient(135deg, #ffd89b, #ff7e5f);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 18px;
+    font-weight: 700;
+    cursor: pointer;
+    margin-top: 15px;
+}
+
+.btn-spin:hover:not(:disabled) {
+    opacity: 0.9;
+}
+
+.btn-spin:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.result-display {
+    background: #f5f5f5;
+    border-radius: 16px;
+    padding: 20px;
+    text-align: center;
+    margin-top: 20px;
+    display: none;
+}
+
+.result-display.show {
+    display: block;
+}
+
+.result-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #666;
+    margin-bottom: 10px;
+}
+
+.result-amount {
+    font-size: 28px;
+    font-weight: 800;
+    color: #667eea;
+}
+
+.result-status {
+    font-size: 14px;
+    color: #999;
+    margin-top: 10px;
+}
+</style>
+</head>
+<body>
+<div class="screen">
+    <div class="page-header">
+        <a href="index.html" class="back-btn">←</a>
+        <h1>행운의 룰렛</h1>
+    </div>
+
+    <div class="page-content">
+        <div class="roulette-section">
+            <div class="roulette-wheel-container">
+                <div class="roulette-pointer">▼</div>
+                <div class="roulette-wheel" id="rouletteWheel"></div>
+            </div>
+
+            <div class="bet-section">
+                <div class="bet-label">베팅 금액</div>
+                <input type="number" id="betAmount" class="bet-input" placeholder="금액 입력" min="0">
+                
+                <div class="quick-bets">
+                    <button class="quick-bet" onclick="setBet(1000)">1K</button>
+                    <button class="quick-bet" onclick="setBet(10000)">10K</button>
+                    <button class="quick-bet" onclick="setBet(100000)">100K</button>
+                    <button class="quick-bet" onclick="setBet(1000000)">1M</button>
+                </div>
+
+                <div class="current-gold" id="currentGold">보유 골드: 0G</div>
+            </div>
+
+            <button id="spinBtn" class="btn-spin">스핀!</button>
+
+            <div id="resultDisplay" class="result-display">
+                <div class="result-title" id="resultTitle"></div>
+                <div class="result-amount" id="resultAmount"></div>
+                <div class="result-status" id="resultStatus"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="config.js"></script>
+<script src="roulette.js"></script>
+</body>
+</html>

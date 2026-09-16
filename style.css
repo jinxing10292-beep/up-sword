@@ -111,6 +111,8 @@
     color:#333;
     text-align:center;
     cursor:pointer;
+    text-decoration: none;
+    display: block;
   }
   .menu-btn.battle{ background:var(--battle); color:#fff; }
   .menu-btn.gm{ background:var(--gm); color:#111; }

@@ -82,3 +82,8 @@ CREATE INDEX idx_users_username ON users(username);
 CREATE INDEX idx_inventory_user ON inventory(user_id);
 CREATE INDEX idx_battle_history_date ON battle_history(battle_date DESC);
 CREATE INDEX idx_roulette_log_date ON roulette_log(created_at DESC);
+
+-- RLS 비활성화 (개발 단계)
+-- ALTER TABLE users ENABLE ROW LEVEL SECURITY;
+-- ALTER TABLE player_stats ENABLE ROW LEVEL SECURITY;
+-- ALTER TABLE inventory ENABLE ROW LEVEL SECURITY;

@@ -9,6 +9,10 @@ function formatNumber(num) {
 // 랭킹 로드
 async function loadRanking() {
     try {
+        if (!CONFIG || !CONFIG.supabase) {
+            throw new Error('Supabase 초기화 실패');
+        }
+
         const { data, error } = await CONFIG.supabase
             .from('users')
             .select('id, username, gold, sword_level')

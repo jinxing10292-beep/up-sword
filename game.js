@@ -184,6 +184,26 @@ function storeSword() {
     showResult('protect', '✅ 보관됨', `+${inventory.storedSwords[inventory.storedSwords.length - 1].level} 검이 보관되었습니다.`);
 }
 
+// 폭죽 애니메이션
+function showConfetti(type) {
+    const modal = document.getElementById('resultModal');
+    const content = document.getElementById('resultContent');
+    
+    // 모달 내용 설정
+    const icons = {
+        success: '⭐',
+        maintain: '⚪',
+        protect: '🛡️',
+        break: '💥'
+    };
+    
+    content.className = `result-content ${type}`;
+    content.innerHTML = `<div style="font-size: 60px; animation: bounce 0.8s infinite;">${icons[type] || '⭐'}</div>`;
+    
+    modal.classList.add('show');
+    setTimeout(() => modal.classList.remove('show'), 800);
+}
+
 // 결과 표시
 function showResult(type, title, detail) {
     const modal = document.getElementById('resultModal');
@@ -198,7 +218,7 @@ function showResult(type, title, detail) {
     detailEl.textContent = detail;
 
     modal.classList.add('show');
-    setTimeout(() => modal.classList.remove('show'), 2000);
+    setTimeout(() => modal.classList.remove('show'), 1200);
 }
 
 // Supabase 업데이트

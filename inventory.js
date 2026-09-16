@@ -66,7 +66,7 @@ function loadStorage() {
     const list = document.getElementById('storageList');
     list.innerHTML = '';
 
-    if (inventory.storedSwords.length === 0) {
+    if (!inventory.storedSwords || inventory.storedSwords.length === 0) {
         list.innerHTML = '<div class="empty-message">보관된 검이 없습니다.</div>';
         return;
     }
@@ -74,11 +74,13 @@ function loadStorage() {
     inventory.storedSwords.forEach((sword, idx) => {
         const div = document.createElement('div');
         div.className = 'inventory-item';
+        const sellPrice = sword.sellPrice || 0;
+        
         div.innerHTML = `
             <div class="item-info">
                 <h3>보관된 검 #${idx + 1}</h3>
-                <p>+${sword.level} 검</p>
-                <p style="color: #f5a623; font-weight: 700;">강화 비용: ${formatNumber(sword.cost)}</p>
+                <p>+${sword.level || 0} 검</p>
+                <p style="color: #7b5bd6; font-weight: 700;">판매가: ${formatNumber(sellPrice)}</p>
             </div>
             <div class="item-action">
                 <button class="item-btn" onclick="retrieveSword(${idx})">회수</button>

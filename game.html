@@ -6,7 +6,14 @@
 <title>강화 - 검 키우기</title>
 <link rel="stylesheet" href="page.css">
 <style>
-.enhancement-section {
+.game-container {
+    max-width: 430px;
+    margin: 0 auto;
+    background: #f2f2f2;
+    padding: 20px 18px 60px;
+}
+
+.sword-card {
     background: white;
     border: 3px solid #111;
     border-radius: 28px;
@@ -14,115 +21,174 @@
     margin-bottom: 20px;
 }
 
-.sword-display {
+.sword-image {
     text-align: center;
     margin-bottom: 20px;
 }
 
 .sword-icon {
-    font-size: 60px;
+    font-size: 80px;
     margin-bottom: 10px;
+}
+
+.sword-title {
+    font-size: 18px;
+    font-weight: 800;
+    color: #111;
+    margin-bottom: 5px;
 }
 
 .sword-level {
     font-size: 28px;
     font-weight: 800;
+    color: #667eea;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 12px;
+    margin: 20px 0;
+}
+
+.stat-box {
+    background: #f5f5f5;
+    border-radius: 12px;
+    padding: 15px;
+    text-align: center;
+}
+
+.stat-label {
+    font-size: 12px;
+    color: #666;
+    margin-bottom: 5px;
+}
+
+.stat-icon {
+    font-size: 20px;
+    margin-bottom: 5px;
+}
+
+.stat-value {
+    font-size: 16px;
+    font-weight: 800;
     color: #111;
 }
 
-.enhancement-info {
-    background: #f5f5f5;
-    border-radius: 16px;
-    padding: 15px;
-    margin: 15px 0;
-    font-size: 14px;
+.stat-value.cost {
+    color: #f5a623;
 }
 
-.info-row {
-    display: flex;
-    justify-content: space-between;
-    margin: 8px 0;
-    font-weight: 700;
+.stat-value.sell {
+    color: #7b5bd6;
 }
 
-.rate-success { color: #4caf50; }
-.rate-maintain { color: #ff9800; }
-.rate-break { color: #f44336; }
+.stat-value.success {
+    color: #4caf50;
+}
 
-.btn-enhance {
-    width: 100%;
+.button-group {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 12px;
+    margin-top: 20px;
+}
+
+.btn-store {
     padding: 16px;
-    background: linear-gradient(135deg, #667eea, #764ba2);
-    color: white;
-    border: none;
-    border-radius: 12px;
-    font-size: 16px;
+    background: white;
+    border: 2px solid #ddd;
+    border-radius: 16px;
+    font-size: 14px;
     font-weight: 700;
     cursor: pointer;
-    margin-top: 15px;
+    color: #111;
+}
+
+.btn-store:hover {
+    background: #f5f5f5;
+}
+
+.btn-enhance {
+    padding: 16px;
+    background: linear-gradient(135deg, #2c3e50, #34495e);
+    color: white;
+    border: none;
+    border-radius: 16px;
+    font-size: 16px;
+    font-weight: 800;
+    cursor: pointer;
 }
 
 .btn-enhance:hover:not(:disabled) {
-    opacity: 0.9;
+    opacity: 0.8;
 }
 
 .btn-enhance:disabled {
-    opacity: 0.6;
+    opacity: 0.5;
     cursor: not-allowed;
 }
 
-.result-message {
-    padding: 15px;
-    border-radius: 12px;
-    text-align: center;
-    font-weight: 700;
-    margin-top: 15px;
-    display: none;
-}
-
-.result-success {
-    background: #d4edda;
-    color: #155724;
-}
-
-.result-maintain {
-    background: #fff3cd;
-    color: #856404;
-}
-
-.result-break {
-    background: #f8d7da;
-    color: #721c24;
-}
-
-.inventory-btn {
+.result-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
     width: 100%;
-    padding: 12px;
-    background: #7b5bd6;
-    color: white;
-    border: none;
-    border-radius: 12px;
-    font-size: 14px;
-    font-weight: 700;
-    cursor: pointer;
-    margin-top: 10px;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
 }
 
-.item-button-group {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-    margin-top: 15px;
+.result-modal.show {
+    display: flex;
 }
 
-.item-button-group button {
-    padding: 12px;
-    background: #e0e0e0;
-    border: none;
-    border-radius: 12px;
+.result-content {
+    background: white;
+    border-radius: 20px;
+    padding: 30px;
+    text-align: center;
+    max-width: 300px;
+}
+
+.result-icon {
+    font-size: 60px;
+    margin-bottom: 15px;
+}
+
+.result-text {
+    font-size: 20px;
+    font-weight: 800;
+    color: #111;
+    margin-bottom: 10px;
+}
+
+.result-detail {
     font-size: 14px;
-    font-weight: 700;
-    cursor: pointer;
+    color: #666;
+}
+
+.result-content.success {
+    background: #d4edda;
+    border: 2px solid #28a745;
+}
+
+.result-content.maintain {
+    background: #fff3cd;
+    border: 2px solid #ffc107;
+}
+
+.result-content.break {
+    background: #f8d7da;
+    border: 2px solid #dc3545;
+}
+
+.result-content.protect {
+    background: #d1ecf1;
+    border: 2px solid #17a2b8;
 }
 </style>
 </head>
@@ -133,74 +199,49 @@
         <h1>검 강화</h1>
     </div>
 
-    <div class="page-content">
-        <!-- 강화 섹션 -->
-        <div class="enhancement-section">
-            <div class="sword-display">
+    <div class="game-container">
+        <div class="sword-card">
+            <!-- 검 이미지 -->
+            <div class="sword-image">
                 <div class="sword-icon">🗡️</div>
+                <div class="sword-title">초보자의 검</div>
                 <div class="sword-level" id="displayLevel">+0</div>
             </div>
 
-            <div class="enhancement-info">
-                <div class="info-row">
-                    <span>현재 레벨:</span>
-                    <span id="currentLevel">+0</span>
+            <!-- 통계 -->
+            <div class="stats-grid">
+                <div class="stat-box">
+                    <div class="stat-label">강화 비용</div>
+                    <div class="stat-icon">⚙️</div>
+                    <div class="stat-value cost" id="costAmount">100G</div>
                 </div>
-                <div class="info-row">
-                    <span>누적 비용:</span>
-                    <span id="cumulativeCost">0G</span>
+                <div class="stat-box">
+                    <div class="stat-label">판매 가격</div>
+                    <div class="stat-icon">💰</div>
+                    <div class="stat-value sell" id="sellPrice">0G</div>
                 </div>
-                <div class="info-row">
-                    <span>보유 골드:</span>
-                    <span id="currentGold">0G</span>
-                </div>
-            </div>
-
-            <div class="enhancement-info">
-                <div class="info-row rate-success">
-                    <span>성공확률:</span>
-                    <span id="successRate">100%</span>
-                </div>
-                <div class="info-row rate-maintain">
-                    <span>유지확률:</span>
-                    <span id="maintainRate">0%</span>
-                </div>
-                <div class="info-row rate-break">
-                    <span>파괴확률:</span>
-                    <span id="breakRate">0%</span>
-                </div>
-                <div class="info-row">
-                    <span>필요 골드:</span>
-                    <span id="costAmount">100G</span>
+                <div class="stat-box">
+                    <div class="stat-label">성공 확률</div>
+                    <div class="stat-icon">✨</div>
+                    <div class="stat-value success" id="successRate">100%</div>
                 </div>
             </div>
 
-            <div id="resultMessage" class="result-message"></div>
-
-            <button id="enhanceBtn" class="btn-enhance">강화하기</button>
-            <button class="inventory-btn" onclick="window.location.href='inventory.html'">인벤토리</button>
-
-            <div class="item-button-group">
-                <button class="item-button" id="protectBtn" onclick="useProtect()">파괴방지권</button>
-                <button class="item-button" id="scrollBtn" onclick="useScroll()">강화권</button>
+            <!-- 버튼 -->
+            <div class="button-group">
+                <button class="btn-store" onclick="storeSword()">보관</button>
+                <button class="btn-enhance" id="enhanceBtn" onclick="enhanceSword()">강화하기</button>
             </div>
         </div>
+    </div>
+</div>
 
-        <!-- 판매 섹션 -->
-        <div class="enhancement-section">
-            <h3 style="margin-bottom: 15px; color: #111;">검 판매</h3>
-            <div class="enhancement-info">
-                <div class="info-row">
-                    <span>판매가:</span>
-                    <span id="sellPrice">0G</span>
-                </div>
-                <div class="info-row">
-                    <span>손익:</span>
-                    <span id="profitLoss">-누적비용</span>
-                </div>
-            </div>
-            <button class="btn-enhance" style="background: linear-gradient(135deg, #f44336, #e91e63);" onclick="sellSword()">판매하기</button>
-        </div>
+<!-- 결과 모달 -->
+<div class="result-modal" id="resultModal">
+    <div class="result-content" id="resultContent">
+        <div class="result-icon" id="resultIcon"></div>
+        <div class="result-text" id="resultText"></div>
+        <div class="result-detail" id="resultDetail"></div>
     </div>
 </div>
 

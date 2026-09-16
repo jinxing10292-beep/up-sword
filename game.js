@@ -32,13 +32,20 @@ const ENHANCEMENT_TABLE = [
     { success: 1, maintain: 0, break: 99, cost: 10000000000 }
 ];
 
+// 판매가 테이블
+const SELL_PRICE_TABLE = [
+    0, 60, 407, 1216, 3509, 6743, 12831, 21943, 37777, 60599,
+    97038, 171053, 295686, 575604, 1127042, 2158839, 4059395, 7493960, 14026316, 29729641,
+    63716305, 151432796, 434968926, 1459524120, 6259813029, 35461774437, 249598994570, 2389256699496, 40245562247397, 1281973974860861,
+    147444191973261585
+];
+
 // 게임 상태
 const gameState = {
     swordLevel: 0,
     gold: 1000000,
     cumulativeCost: 0,
     protectScroll: 0,
-    enhanceScroll: 0,
 
     load() {
         const data = JSON.parse(localStorage.getItem('gameState') || '{}');
@@ -46,11 +53,24 @@ const gameState = {
         this.gold = data.gold || 1000000;
         this.cumulativeCost = data.cumulativeCost || 0;
         this.protectScroll = data.protectScroll || 0;
-        this.enhanceScroll = data.enhanceScroll || 0;
     },
 
     save() {
         localStorage.setItem('gameState', JSON.stringify(this));
+    }
+};
+
+// 인벤토리
+const inventory = {
+    storedSwords: [],
+
+    load() {
+        const data = JSON.parse(localStorage.getItem('inventory') || '{}');
+        this.storedSwords = data.storedSwords || [];
+    },
+
+    save() {
+        localStorage.setItem('inventory', JSON.stringify(this));
     }
 };
 
@@ -64,53 +84,43 @@ function formatNumber(num) {
 // UI 업데이트
 function updateUI() {
     const level = gameState.swordLevel;
-    const enhancement = ENHANCEMENT_TABLE[Math.min(level, 29)];
-
-    document.getElementById('displayLevel').textContent = `+${level}`;
-    document.getElementById('currentLevel').textContent = `+${level}`;
-    document.getElementById('cumulativeCost').textContent = formatNumber(gameState.cumulativeCost);
-    document.getElementById('currentGold').textContent = formatNumber(gameState.gold);
-    document.getElementById('successRate').textContent = `${enhancement.success}%`;
-    document.getElementById('maintainRate').textContent = `${enhancement.maintain}%`;
-    document.getElementById('breakRate').textContent = `${enhancement.break}%`;
-    document.getElementById('costAmount').textContent = formatNumber(enhancement.cost);
-
-    // 판매가 계산
-    if (level >= 13) {
-        const sellPrice = gameState.cumulativeCost;
-        const profit = sellPrice - gameState.cumulativeCost;
-        document.getElementById('sellPrice').textContent = formatNumber(sellPrice);
-        document.getElementById('profitLoss').textContent = profit >= 0 ? `+${formatNumber(profit)}` : formatNumber(profit);
-    } else {
-        document.getElementById('sellPrice').textContent = formatNumber(0);
-        document.getElementById('profitLoss').textContent = `-${formatNumber(gameState.cumulativeCost)}`;
-    }
-
-    // 강화 버튼 활성화
-    const btn = document.getElementById('enhanceBtn');
     if (level >= 30) {
-        btn.disabled = true;
-        btn.textContent = '최대강화 달성!';
+        document.getElementById('displayLevel').textContent = '+30 (완료)';
+        document.getElementById('enhanceBtn').disabled = true;
+        document.getElementById('enhanceBtn').textContent = '완료';
     } else {
-        btn.disabled = gameState.gold < enhancement.cost;
-        btn.textContent = gameState.gold < enhancement.cost ? '골드 부족' : '강화하기';
+        document.getElementById('displayLevel').textContent = `+${level}`;
+        const enhancement = ENHANCEMENT_TABLE[level];
+        document.getElementById('costAmount').textContent = formatNumber(enhancement.cost) + 'G';
+        document.getElementById('successRate').textContent = `${enhancement.success}%`;
+
+        // 판매가 (sell-price.md 적용)
+        const sellPrice = SELL_PRICE_TABLE[level];
+        document.getElementById('sellPrice').textContent = formatNumber(sellPrice) + 'G';
+
+        // 강화 버튼 활성화
+        const canEnhance = gameState.gold >= enhancement.cost;
+        document.getElementById('enhanceBtn').disabled = !canEnhance;
+        document.getElementById('enhanceBtn').textContent = canEnhance ? '강화하기' : '골드 부족';
     }
 }
 
-// 강화 실행
-document.getElementById('enhanceBtn').addEventListener('click', async () => {
+// 강화하기
+function enhanceSword() {
     const level = gameState.swordLevel;
     if (level >= 30) return;
 
     const enhancement = ENHANCEMENT_TABLE[level];
     if (gameState.gold < enhancement.cost) {
-        alert('골드가 부족합니다!');
+        showResult('error', '골드 부족', '필요한 골드보다 적습니다.');
         return;
     }
 
+    // 비용 차감
     gameState.gold -= enhancement.cost;
     gameState.cumulativeCost += enhancement.cost;
 
+    // 확률 계산
     const rand = Math.random() * 100;
     let result;
 
@@ -120,7 +130,7 @@ document.getElementById('enhanceBtn').addEventListener('click', async () => {
     } else if (rand < enhancement.success + enhancement.maintain) {
         result = 'maintain';
     } else {
-        // 파괴 방지권 사용
+        // 파괴 처리
         if (gameState.protectScroll > 0) {
             gameState.protectScroll--;
             result = 'protect';
@@ -131,65 +141,64 @@ document.getElementById('enhanceBtn').addEventListener('click', async () => {
     }
 
     gameState.save();
-    await updatePlayerStats();
     updateUI();
-    showResult(result);
-});
+    updatePlayerStats();
 
-// 결과 표시
-function showResult(result) {
-    const msg = document.getElementById('resultMessage');
-    msg.style.display = 'block';
-
+    // 결과 표시
     switch (result) {
         case 'success':
-            msg.textContent = '⭐ 강화 성공!';
-            msg.className = 'result-message result-success';
+            showResult('success', '⭐ 성공!', `+${level + 1}로 강화되었습니다!`);
             break;
         case 'maintain':
-            msg.textContent = '⚪ 강화 유지';
-            msg.className = 'result-message result-maintain';
+            showResult('maintain', '⚪ 유지', `강화가 유지되었습니다.`);
             break;
         case 'protect':
-            msg.textContent = '🛡️ 파괴 방지권 사용! 유지됨';
-            msg.className = 'result-message result-maintain';
+            showResult('protect', '🛡️ 방지됨', `파괴방지권으로 보호되었습니다!`);
             break;
         case 'break':
-            msg.textContent = '💥 강화 파괴! 레벨 -1';
-            msg.className = 'result-message result-break';
+            showResult('break', '💥 파괴', `강화가 파괴되어 +${gameState.swordLevel}로 내려갔습니다.`);
             break;
     }
-
-    setTimeout(() => msg.style.display = 'none', 3000);
 }
 
-// 판매하기
-async function sellSword() {
-    const level = gameState.swordLevel;
-    if (level === 0) {
-        alert('판매할 검이 없습니다.');
+// 보관하기
+function storeSword() {
+    if (gameState.swordLevel === 0) {
+        showResult('error', '알림', '보관할 검이 없습니다.');
         return;
     }
 
-    const sellPrice = level >= 13 ? gameState.cumulativeCost : 0;
-    gameState.gold += sellPrice;
+    const sellPrice = SELL_PRICE_TABLE[gameState.swordLevel];
+
+    inventory.storedSwords.push({
+        level: gameState.swordLevel,
+        sellPrice: sellPrice
+    });
+
     gameState.swordLevel = 0;
     gameState.cumulativeCost = 0;
-
     gameState.save();
-    await updatePlayerStats();
+    inventory.save();
     updateUI();
-    alert(`검 판매 완료! +${formatNumber(sellPrice)}G`);
+
+    showResult('protect', '✅ 보관됨', `+${inventory.storedSwords[inventory.storedSwords.length - 1].level} 검이 보관되었습니다.`);
 }
 
-// 파괴 방지권 사용
-function useProtect() {
-    alert('인벤토리에서 사용 가능합니다.');
-}
+// 결과 표시
+function showResult(type, title, detail) {
+    const modal = document.getElementById('resultModal');
+    const content = document.getElementById('resultContent');
+    const icon = document.getElementById('resultIcon');
+    const text = document.getElementById('resultText');
+    const detailEl = document.getElementById('resultDetail');
 
-// 강화권 사용
-function useScroll() {
-    alert('인벤토리에서 사용 가능합니다.');
+    content.className = `result-content ${type}`;
+    icon.textContent = title.split(' ')[0];
+    text.textContent = title.split(' ').slice(1).join(' ');
+    detailEl.textContent = detail;
+
+    modal.classList.add('show');
+    setTimeout(() => modal.classList.remove('show'), 2000);
 }
 
 // Supabase 업데이트
@@ -198,7 +207,7 @@ async function updatePlayerStats() {
         const userId = localStorage.getItem('userId');
         const isGuest = localStorage.getItem('isGuest') === 'true';
         
-        if (!userId || isGuest) return; // 게스트는 저장 안 함
+        if (!userId || isGuest) return;
 
         await CONFIG.supabase
             .from('users')
@@ -216,5 +225,6 @@ async function updatePlayerStats() {
 // 초기화
 document.addEventListener('DOMContentLoaded', () => {
     gameState.load();
+    inventory.load();
     updateUI();
 });

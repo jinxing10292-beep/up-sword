@@ -20,7 +20,6 @@ document.getElementById('signupForm').addEventListener('submit', async (e) => {
     const password = document.getElementById('signupPassword').value;
     const confirm = document.getElementById('signupPasswordConfirm').value;
 
-    // 검증
     if (!email.includes('@')) {
         showMsg('signup', '올바른 이메일을 입력하세요.', 'error');
         return;
@@ -42,7 +41,7 @@ document.getElementById('signupForm').addEventListener('submit', async (e) => {
         // Supabase 저장
         const { data, error } = await CONFIG.supabase
             .from('users')
-            .insert([{ email, username, password }])
+            .insert([{ email, username, password_hash: password }])
             .select();
 
         if (error) throw error;
@@ -53,6 +52,7 @@ document.getElementById('signupForm').addEventListener('submit', async (e) => {
         localStorage.setItem('userId', userId);
         localStorage.setItem('username', username);
         localStorage.setItem('email', email);
+        localStorage.setItem('isGuest', 'false');
 
         showMsg('signup', '회원가입 성공! 게임 시작합니다.', 'success');
         
@@ -75,17 +75,18 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
         // Supabase 조회
         const { data, error } = await CONFIG.supabase
             .from('users')
-            .select('id, username, email, password')
+            .select('id, username, email, password_hash')
             .eq('email', email)
             .single();
 
         if (error || !data) throw new Error('계정을 찾을 수 없습니다.');
-        if (data.password !== password) throw new Error('비밀번호가 일치하지 않습니다.');
+        if (data.password_hash !== password) throw new Error('비밀번호가 일치하지 않습니다.');
 
         // 로컬 저장
         localStorage.setItem('userId', data.id);
         localStorage.setItem('username', data.username);
         localStorage.setItem('email', data.email);
+        localStorage.setItem('isGuest', 'false');
 
         showMsg('login', '로그인 성공!', 'success');
         
@@ -97,3 +98,24 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
         showMsg('login', '로그인 실패: ' + error.message, 'error');
     }
 });
+
+// ===== 게스트 로그인 =====
+function guestLogin() {
+    const guestId = 'guest_' + Date.now();
+    const guestName = '게스트_' + Math.floor(Math.random() * 10000);
+
+    localStorage.setItem('userId', guestId);
+    localStorage.setItem('username', guestName);
+    localStorage.setItem('email', '');
+    localStorage.setItem('isGuest', 'true');
+
+    // 게스트 게임 상태 초기화
+    localStorage.setItem('gameState', JSON.stringify({
+        swordLevel: 0,
+        gold: 1000000,
+        money: 0,
+        cumulativeCost: 0
+    }));
+
+    window.location.href = 'index.html';
+}

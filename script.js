@@ -85,6 +85,8 @@ function updateUI() {
 
 // ===== 초기화 =====
 document.addEventListener('DOMContentLoaded', () => {
+    console.log('DOMContentLoaded 시작');
+    
     const userId = localStorage.getItem('userId');
     const username = localStorage.getItem('username');
     
@@ -94,5 +96,32 @@ document.addEventListener('DOMContentLoaded', () => {
         gameState.load();
         updateUI();
         document.querySelector('.greeting').textContent = `${username}님\n안녕하세요!`;
+    } else {
+        window.location.href = 'auth.html';
+    }
+
+    // 버튼 이벤트
+    document.querySelectorAll('.menu-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            console.log('버튼 클릭:', btn.textContent);
+        });
+    });
+
+    // 강화 버튼 (placeholder)
+    const promo = document.querySelector('.promo-card.sword');
+    if (promo) {
+        promo.style.cursor = 'pointer';
+        promo.addEventListener('click', () => {
+            window.location.href = 'game.html';
+        });
+    }
+
+    // 룰렛 버튼 (placeholder)
+    const roulette = document.querySelector('.promo-card.soon');
+    if (roulette) {
+        roulette.style.cursor = 'pointer';
+        roulette.addEventListener('click', () => {
+            console.log('룰렛 준비 중');
+        });
     }
 });

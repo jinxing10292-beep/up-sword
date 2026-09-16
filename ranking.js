@@ -15,10 +15,18 @@ async function loadRanking() {
             .order('gold', { ascending: false })
             .limit(100);
 
-        if (error) throw error;
+        if (error) {
+            console.error('Supabase 오류:', error);
+            throw error;
+        }
 
         const list = document.getElementById('rankingList');
         list.innerHTML = '';
+
+        if (!data || data.length === 0) {
+            list.innerHTML = '<p style="text-align: center; color: #999;">랭킹 데이터가 없습니다.</p>';
+            return;
+        }
 
         data.forEach((user, idx) => {
             const div = document.createElement('div');
@@ -32,15 +40,16 @@ async function loadRanking() {
             div.innerHTML = `
                 <div class="rank-num">${medal}</div>
                 <div class="rank-info">
-                    <div class="rank-name">${user.username}</div>
-                    <div class="rank-level">+${user.sword_level}</div>
+                    <div class="rank-name">${user.username || '알수없음'}</div>
+                    <div class="rank-level">+${user.sword_level || 0}</div>
                 </div>
-                <div class="rank-gold">${formatNumber(user.gold)}G</div>
+                <div class="rank-gold">${formatNumber(user.gold || 0)}G</div>
             `;
             list.appendChild(div);
         });
     } catch (error) {
         console.error('랭킹 로드 실패:', error);
+        document.getElementById('rankingList').innerHTML = '<p style="text-align: center; color: #f44336;">랭킹을 불러올 수 없습니다.</p>';
     }
 }
 

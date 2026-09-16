@@ -137,7 +137,9 @@ function showMsg(text, type) {
 async function updatePlayerStats() {
     try {
         const userId = localStorage.getItem('userId');
-        if (!userId) return;
+        const isGuest = localStorage.getItem('isGuest') === 'true';
+        
+        if (!userId || isGuest) return; // 게스트는 저장 안 함
 
         await CONFIG.supabase
             .from('users')

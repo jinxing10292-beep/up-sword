@@ -186,7 +186,7 @@
   /* footer buttons */
   .footer-row{
     display:grid;
-    grid-template-columns:1fr 1fr;
+    grid-template-columns:1fr;
     gap:14px;
   }
   .footer-btn{
@@ -197,4 +197,9 @@
     font-weight:800;
     font-size:16px;
     color:#111;
+    border: none;
+    cursor: pointer;
+  }
+  .footer-btn:hover {
+    opacity: 0.8;
   }

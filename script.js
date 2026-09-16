@@ -124,4 +124,24 @@ document.addEventListener('DOMContentLoaded', () => {
             console.log('룰렛 준비 중');
         });
     }
+
+    // 로그아웃 버튼
+    const logoutBtn = document.getElementById('logoutBtn');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', () => {
+            if (confirm('로그아웃하시겠습니까?')) {
+                // 데이터 저장
+                gameState.save();
+                
+                // localStorage 정리
+                localStorage.removeItem('userId');
+                localStorage.removeItem('username');
+                localStorage.removeItem('email');
+                localStorage.removeItem('isGuest');
+                
+                // 로그인 페이지로 이동
+                window.location.href = 'auth.html';
+            }
+        });
+    }
 });

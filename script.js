@@ -1,4 +1,3 @@
-// ===== 게임 상태 =====
 const gameState = {
     swordLevel: 0,
     gold: 1000000,
@@ -17,19 +16,30 @@ const gameState = {
     },
 
     load() {
-        const data = JSON.parse(localStorage.getItem('gameState') || '{}');
-        this.swordLevel = data.swordLevel || 0;
-        this.gold = data.gold || 1000000;
-        this.money = data.money || 0;
-        this.cumulativeCost = data.cumulativeCost || 0;
+        try {
+            const data = JSON.parse(localStorage.getItem('gameState') || '{}');
+            this.swordLevel = data.swordLevel || 0;
+            this.gold = data.gold || 1000000;
+            this.money = data.money || 0;
+            this.cumulativeCost = data.cumulativeCost || 0;
+        } catch (error) {
+            console.warn('게임 상태 로드 실패:', error);
+            this.swordLevel = 0;
+            this.gold = 1000000;
+            this.money = 0;
+            this.cumulativeCost = 0;
+        }
     },
 
     updateRanking() {
-        return JSON.parse(localStorage.getItem('rankings') || '[]');
+        try {
+            return JSON.parse(localStorage.getItem('rankings') || '[]');
+        } catch (error) {
+            return [];
+        }
     }
 };
 
-// ===== 강화 데이터 =====
 const ENHANCEMENT_DATA = {
     0: { success: 100, maintain: 0, break: 0, cost: 100 },
     1: { success: 100, maintain: 0, break: 0, cost: 200 },
@@ -64,7 +74,6 @@ const ENHANCEMENT_DATA = {
     30: { success: 0, maintain: 0, break: 0, cost: 0 }
 };
 
-// ===== 도움 함수 =====
 function formatNumber(num) {
     if (num >= 1_000_000_000) return (num / 1_000_000_000).toFixed(1) + 'B';
     if (num >= 1_000_000) return (num / 1_000_000).toFixed(1) + 'M';
@@ -72,43 +81,95 @@ function formatNumber(num) {
     return num.toString();
 }
 
-// ===== UI 업데이트 =====
 function updateUI() {
     const goldEl = document.querySelector('.stat-box .gold');
     const moneyEl = document.querySelector('.stat-box .money');
-    
+
     if (goldEl) {
         goldEl.textContent = formatNumber(gameState.gold);
+    }
+    if (moneyEl) {
         moneyEl.textContent = formatNumber(gameState.money);
     }
 }
 
-// ===== 초기화 =====
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('DOMContentLoaded 시작');
-    
     const userId = localStorage.getItem('userId');
     const username = localStorage.getItem('username');
-    
+
     if (userId && username) {
         gameState.userId = userId;
         gameState.username = username;
         gameState.load();
         updateUI();
-        document.querySelector('.greeting').textContent = `${username}님\n안녕하세요!`;
+
+        const greeting = document.querySelector('.greeting');
+        if (greeting) {
+            greeting.innerHTML = `${username}님<br>안녕하세요!`;
+        }
+
+        const topUsername = document.getElementById('topUsername');
+        if (topUsername) {
+            topUsername.textContent = username;
+        }
     } else {
         window.location.href = 'auth.html';
     }
 
-    // 버튼 이벤트
+    const rankingModal = document.getElementById('rankingModal');
+    const closeRankingBtn = document.getElementById('closeRankingBtn');
+
     document.querySelectorAll('.menu-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
+        btn.addEventListener('click', () => {
+            const action = btn.dataset.action;
+            if (action === 'ranking') {
+                if (rankingModal) {
+                    rankingModal.classList.add('visible');
+                    rankingModal.setAttribute('aria-hidden', 'false');
+                }
+                return;
+            }
+
+            if (action === 'attendance') {
+                window.location.href = 'attendance.html';
+                return;
+            }
+            if (action === 'shop') {
+                window.location.href = 'shop.html';
+                return;
+            }
+            if (action === 'inventory') {
+                window.location.href = 'inventory.html';
+                return;
+            }
+            if (action === 'achievement') {
+                window.location.href = 'achievements.html';
+                return;
+            }
+            if (action === 'sword') {
+                window.location.href = 'game.html';
+                return;
+            }
+
             console.log('버튼 클릭:', btn.textContent);
         });
     });
 
-    // 강화 버튼 (placeholder)
-    const promo = document.querySelector('.promo-card.sword');
+    if (closeRankingBtn && rankingModal) {
+        closeRankingBtn.addEventListener('click', () => {
+            rankingModal.classList.remove('visible');
+            rankingModal.setAttribute('aria-hidden', 'true');
+        });
+
+        rankingModal.addEventListener('click', (event) => {
+            if (event.target === rankingModal) {
+                rankingModal.classList.remove('visible');
+                rankingModal.setAttribute('aria-hidden', 'true');
+            }
+        });
+    }
+
+    const promo = document.querySelector('.promo-card.sword-card');
     if (promo) {
         promo.style.cursor = 'pointer';
         promo.addEventListener('click', () => {
@@ -116,32 +177,12 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // 룰렛 버튼 (placeholder)
-    const roulette = document.querySelector('.promo-card.soon');
+    const roulette = document.querySelector('.promo-card.roulette-card');
     if (roulette) {
         roulette.style.cursor = 'pointer';
-        roulette.addEventListener('click', () => {
-            console.log('룰렛 준비 중');
-        });
-    }
-
-    // 로그아웃 버튼
-    const logoutBtn = document.getElementById('logoutBtn');
-    if (logoutBtn) {
-        logoutBtn.addEventListener('click', () => {
-            if (confirm('로그아웃하시겠습니까?')) {
-                // 데이터 저장
-                gameState.save();
-                
-                // localStorage 정리
-                localStorage.removeItem('userId');
-                localStorage.removeItem('username');
-                localStorage.removeItem('email');
-                localStorage.removeItem('isGuest');
-                
-                // 로그인 페이지로 이동
-                window.location.href = 'auth.html';
-            }
+        roulette.addEventListener('click', (event) => {
+            event.preventDefault();
+            alert('준비 중인 기능입니다.');
         });
     }
 });

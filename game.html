@@ -1,261 +1,282 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>강화 - 검 키우기</title>
-<link rel="stylesheet" href="page.css">
-<style>
-.game-container {
-    max-width: 430px;
-    margin: 0 auto;
-    background: #f2f2f2;
-    padding: 20px 18px 60px;
-}
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>강화 - 검 키우기</title>
+  <link rel="stylesheet" href="page.css">
+  <style>
+    body {
+      background: #f3f3f3;
+    }
 
-.sword-card {
-    background: white;
-    border: 3px solid #111;
-    border-radius: 28px;
-    padding: 25px;
-    margin-bottom: 20px;
-}
+    .screen {
+      max-width: 500px;
+      margin: 0 auto;
+      background: #f3f3f3;
+      padding-bottom: 32px;
+    }
 
-.sword-image {
-    text-align: center;
-    margin-bottom: 20px;
-}
+    .top-header {
+      background: #1a2734;
+      border-radius: 30px 30px 0 0;
+      height: 90px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 18px 0 16px;
+      color: #fff;
+      border: 3px solid #111;
+      border-bottom: none;
+      margin-top: 18px;
+    }
 
-.sword-icon {
-    font-size: 80px;
-    margin-bottom: 10px;
-}
+    .home-badge {
+      width: 42px;
+      height: 42px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 34px;
+      filter: brightness(1.2);
+      opacity: 0.95;
+    }
 
-.sword-title {
-    font-size: 18px;
-    font-weight: 800;
-    color: #111;
-    margin-bottom: 5px;
-}
+    .player-name {
+      flex: 1;
+      font-size: 28px;
+      font-weight: 900;
+      letter-spacing: -0.06em;
+      margin-left: 8px;
+    }
 
-.sword-level {
-    font-size: 28px;
-    font-weight: 800;
-    color: #667eea;
-}
+    .header-currency {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      font-weight: 900;
+      font-size: 22px;
+      letter-spacing: -0.05em;
+    }
 
-.stats-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 12px;
-    margin: 20px 0;
-}
+    .gold-text {
+      color: #f5b200;
+    }
 
-.stat-box {
-    background: #f5f5f5;
-    border-radius: 12px;
-    padding: 15px;
-    text-align: center;
-}
+    .money-text {
+      color: #fff;
+    }
 
-.stat-label {
-    font-size: 12px;
-    color: #666;
-    margin-bottom: 5px;
-}
+    .code-btn {
+      background: #f3f3f3;
+      color: #111;
+      border: 0;
+      border-radius: 18px;
+      padding: 9px 16px;
+      font-size: 18px;
+      font-weight: 800;
+      margin-left: 14px;
+    }
 
-.stat-icon {
-    font-size: 20px;
-    margin-bottom: 5px;
-}
+    .upgrade-wrap {
+      background: #ebebeb;
+      border: 3px solid #111;
+      border-top: 0;
+      border-radius: 0 0 30px 30px;
+      padding: 18px 20px 20px;
+      min-height: 740px;
+    }
 
-.stat-value {
-    font-size: 16px;
-    font-weight: 800;
-    color: #111;
-}
+    .upgrade-card {
+      position: relative;
+      background: #d8d8ef;
+      border: 4px solid #111;
+      border-radius: 24px;
+      min-height: 300px;
+      padding: 20px 20px 18px;
+      overflow: hidden;
+    }
 
-.stat-value.cost {
-    color: #f5a623;
-}
+    .upgrade-ribbon {
+      position: absolute;
+      top: 16px;
+      left: -34px;
+      width: 160px;
+      background: #f7cd48;
+      color: #111;
+      font-size: 16px;
+      font-weight: 900;
+      text-align: center;
+      padding: 5px 0;
+      transform: rotate(-34deg);
+    }
 
-.stat-value.sell {
-    color: #7b5bd6;
-}
+    .upgrade-title {
+      font-size: 42px;
+      line-height: 0.95;
+      font-weight: 900;
+      letter-spacing: -0.08em;
+      margin: 18px 0 0;
+      display: inline-block;
+      max-width: 220px;
+    }
 
-.stat-value.success {
-    color: #4caf50;
-}
+    .upgrade-copy {
+      margin-top: 18px;
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: -0.04em;
+      text-align: center;
+    }
 
-.button-group {
-    display: grid;
-    grid-template-columns: 1fr 2fr;
-    gap: 12px;
-    margin-top: 20px;
-}
+    .sword-visual {
+      position: absolute;
+      bottom: 16px;
+      right: 30px;
+      width: 180px;
+      height: 130px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 115px;
+      transform: rotate(15deg) translateY(10px);
+      filter: drop-shadow(0 7px 6px rgba(0,0,0,0.18));
+    }
 
-.btn-store {
-    padding: 16px;
-    background: white;
-    border: 2px solid #ddd;
-    border-radius: 16px;
-    font-size: 14px;
-    font-weight: 700;
-    cursor: pointer;
-    color: #111;
-}
+    .item-name {
+      margin-top: 24px;
+      font-size: 34px;
+      font-weight: 900;
+      letter-spacing: -0.05em;
+      text-align: left;
+      padding-left: 8px;
+    }
 
-.btn-store:hover {
-    background: #f5f5f5;
-}
+    .stats-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 22px;
+      margin-top: 18px;
+      padding: 0 8px;
+      font-size: 30px;
+      font-weight: 900;
+      letter-spacing: -0.06em;
+    }
 
-.btn-enhance {
-    padding: 16px;
-    background: linear-gradient(135deg, #2c3e50, #34495e);
-    color: white;
-    border: none;
-    border-radius: 16px;
-    font-size: 16px;
-    font-weight: 800;
-    cursor: pointer;
-}
+    .stats-row .arrow {
+      font-weight: 1000;
+      font-size: 32px;
+      transform: rotate(45deg);
+    }
 
-.btn-enhance:hover:not(:disabled) {
-    opacity: 0.8;
-}
+    .stats-row .value {
+      min-width: 120px;
+      text-align: right;
+    }
 
-.btn-enhance:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-}
+    .buy-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+      margin-top: 26px;
+    }
 
-.result-modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.7);
-    display: none;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-}
+    .action-btn {
+      border: 0;
+      border-radius: 18px;
+      min-height: 70px;
+      font-size: 20px;
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      cursor: pointer;
+    }
 
-.result-modal.show {
-    display: flex;
-}
+    .action-btn.secondary {
+      background: #e0e0e0;
+      color: #111;
+    }
 
-.result-content {
-    background: white;
-    border-radius: 20px;
-    padding: 30px;
-    text-align: center;
-    max-width: 300px;
-}
+    .action-btn.primary {
+      background: #2d3947;
+      color: white;
+    }
 
-.result-icon {
-    font-size: 60px;
-    margin-bottom: 15px;
-}
+    .file-label {
+      color: #9a9a9a;
+      font-size: 18px;
+      font-weight: 600;
+      text-align: center;
+      margin-top: 20px;
+      letter-spacing: -0.04em;
+    }
 
-.result-text {
-    font-size: 20px;
-    font-weight: 800;
-    color: #111;
-    margin-bottom: 10px;
-}
+    @media (max-width: 420px) {
+      .player-name {
+        font-size: 22px;
+      }
 
-.result-detail {
-    font-size: 14px;
-    color: #666;
-}
+      .header-currency {
+        gap: 8px;
+        font-size: 18px;
+      }
 
-.result-content.success {
-    background: #d4edda;
-    border: 2px solid #28a745;
-}
+      .upgrade-title {
+        font-size: 34px;
+      }
 
-.result-content.maintain {
-    background: #fff3cd;
-    border: 2px solid #ffc107;
-}
-
-.result-content.break {
-    background: #f8d7da;
-    border: 2px solid #dc3545;
-}
-
-.result-content.protect {
-    background: #d1ecf1;
-    border: 2px solid #17a2b8;
-}
-
-@keyframes bounce {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.2); }
-}
-
-@keyframes confetti {
-    0% { transform: translateY(0) rotate(0deg); opacity: 1; }
-    100% { transform: translateY(100px) rotate(360deg); opacity: 0; }
-}
-</style>
+      .stats-row {
+        font-size: 24px;
+      }
+    }
+  </style>
 </head>
 <body>
-<div class="screen">
-    <div class="page-header">
-        <a href="index.html" class="back-btn">←</a>
-        <h1>검 강화</h1>
+  <div class="screen">
+    <div class="top-header">
+      <div class="home-badge">🏠</div>
+      <div class="player-name">플레이어님</div>
+      <div class="header-currency">
+        <span class="gold-text">7,000G</span>
+        <span class="money-text">0M</span>
+        <button class="code-btn">코드</button>
+      </div>
     </div>
 
-    <div class="game-container">
-        <div class="sword-card">
-            <!-- 검 이미지 -->
-            <div class="sword-image">
-                <div class="sword-icon">🗡️</div>
-                <div class="sword-title">초보자의 검</div>
-                <div class="sword-level" id="displayLevel">+0</div>
-            </div>
+    <div class="upgrade-wrap">
+      <div class="upgrade-card">
+        <div class="upgrade-ribbon">NEW</div>
+        <div class="upgrade-title">Sword<br>Upgrade</div>
+        <div class="upgrade-copy">강화로 검을 성장시키세요!</div>
+        <div class="sword-visual">🗡️</div>
+      </div>
 
-            <!-- 통계 -->
-            <div class="stats-grid">
-                <div class="stat-box">
-                    <div class="stat-label">강화 비용</div>
-                    <div class="stat-icon">⚙️</div>
-                    <div class="stat-value cost" id="costAmount">100G</div>
-                </div>
-                <div class="stat-box">
-                    <div class="stat-label">판매 가격</div>
-                    <div class="stat-icon">💰</div>
-                    <div class="stat-value sell" id="sellPrice">0G</div>
-                </div>
-                <div class="stat-box">
-                    <div class="stat-label">성공 확률</div>
-                    <div class="stat-icon">✨</div>
-                    <div class="stat-value success" id="successRate">100%</div>
-                </div>
-            </div>
+      <div class="item-name">[+1] 초보자의 검</div>
 
-            <!-- 버튼 -->
-            <div class="button-group">
-                <button class="btn-store" onclick="storeSword()">보관</button>
-                <button class="btn-enhance" id="enhanceBtn" onclick="enhanceSword()">강화하기</button>
-            </div>
-        </div>
+      <div class="stats-row">
+        <div class="arrow">↗</div>
+        <div class="value">12,800G</div>
+      </div>
+      <div class="stats-row">
+        <div class="arrow">↗</div>
+        <div class="value">18,865G</div>
+      </div>
+      <div class="stats-row">
+        <div class="arrow">↗</div>
+        <div class="value">% 60%</div>
+      </div>
+
+      <div class="buy-row">
+        <button class="action-btn secondary" type="button">판매</button>
+        <button class="action-btn primary" type="button">강화하기</button>
+      </div>
+
+      <div class="file-label">sword.html</div>
     </div>
-</div>
+  </div>
 
-<!-- 결과 모달 -->
-<div class="result-modal" id="resultModal">
-    <div class="result-content" id="resultContent">
-        <div class="result-icon" id="resultIcon"></div>
-        <div class="result-text" id="resultText"></div>
-        <div class="result-detail" id="resultDetail"></div>
-    </div>
-</div>
-
-<script src="config.js"></script>
-<script src="game.js"></script>
+  <script src="config.js"></script>
+  <script src="game.js"></script>
 </body>
+</html>
 </html>

@@ -1,74 +1,108 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>검 키우기 게임</title>
-<link rel="stylesheet" href="style.css">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>검 키우기 게임</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
-<div class="screen">
-
-  <!-- 프로필 카드 -->
-  <div class="profile-card">
-    <div class="profile-top">
-      <div class="greeting">플레이어님<br>안녕하세요!</div>
-      <div class="avatar">
-        <svg viewBox="0 0 24 24"><path d="M12 12c2.7 0 4.9-2.2 4.9-4.9S14.7 2.2 12 2.2 7.1 4.4 7.1 7.1 9.3 12 12 12zm0 2.5c-3.3 0-9.9 1.7-9.9 5v2.3h19.8V19.5c0-3.3-6.6-5-9.9-5z"/></svg>
+  <div class="screen">
+    <div class="status-bar">
+      <div class="time">9:13</div>
+      <div class="status-icons">
+        <span class="signal"></span>
+        <span class="wifi"></span>
+        <span class="battery"></span>
       </div>
     </div>
 
-    <div class="stat-box">
-      <div class="row">GOLD:<span class="gold">0</span>G</div>
-      <div class="row">MONEY:<span class="money">0</span>M</div>
+    <div class="top-bar">
+      <button class="nav-back" aria-label="back">‹</button>
+      <div class="user-chip">
+        <span class="lock-icon">🔒</span>
+        <span id="topUsername">yejun1473-hue.github.io</span>
+        <span class="small-tag">가가</span>
+      </div>
+      <button class="chat-btn" aria-label="chat">◉</button>
+    </div>
+
+    <div class="profile-panel">
+      <div class="profile-header">
+        <h1 class="greeting">플레이어님<br>안녕하세요!</h1>
+        <div class="avatar-wrap">
+          <div class="avatar-circle">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 12c2.7 0 4.9-2.2 4.9-4.9S14.7 2.2 12 2.2 7.1 4.4 7.1 7.1 9.3 12 12 12zm0 2.5c-3.3 0-9.9 1.7-9.9 5v2.3h19.8V19.5c0-3.3-6.6-5-9.9-5z"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <div class="stat-box">
+        <div class="stat-row">GOLD:<span class="gold">0</span>G</div>
+        <div class="stat-row">MONEY:<span class="money">0</span>M</div>
+      </div>
+    </div>
+
+    <div class="menu-panel">
+      <div class="menu-grid one">
+        <button type="button" class="menu-btn" data-action="ranking">랭킹</button>
+        <button type="button" class="menu-btn" data-action="attendance">출석체크</button>
+        <button type="button" class="menu-btn battle">배틀</button>
+        <button type="button" class="menu-btn gm">GM</button>
+      </div>
+    </div>
+
+    <div class="menu-panel">
+      <div class="menu-grid two">
+        <button type="button" class="menu-btn" data-action="inventory">인벤토리</button>
+        <button type="button" class="menu-btn" data-action="shop">상점</button>
+        <button type="button" class="menu-btn" data-action="achievement">업적</button>
+        <button type="button" class="menu-btn" data-action="sword">검도감</button>
+      </div>
+    </div>
+
+    <div class="promo-row">
+      <a href="game.html" class="promo-card sword-card">
+        <span class="ribbon">NEW</span>
+        <div class="promo-title">Sword<br>Upgrade</div>
+      </a>
+
+      <a href="roulette.html" class="promo-card roulette-card">
+        <span class="ribbon">NEW</span>
+        <div class="roulette-rotate">roulette</div>
+      </a>
+    </div>
+
+    <div class="footer-nav">
+      <button class="nav-arrow left" aria-label="left">←</button>
+      <button class="nav-arrow center" aria-label="cycle">↻</button>
+      <button class="nav-arrow right" aria-label="up">↑</button>
     </div>
   </div>
 
-  <!-- 메뉴 카드 1 -->
-  <div class="menu-card">
-    <div class="menu-grid">
-      <a href="ranking.html" class="menu-btn">랭킹</a>
-      <a href="attendance.html" class="menu-btn">출석체크</a>
-      <button class="menu-btn battle">배틀</button>
-      <button class="menu-btn gm">GM</button>
+  <div class="ranking-modal" id="rankingModal" aria-hidden="true">
+    <div class="ranking-box">
+      <button class="close-btn" id="closeRankingBtn" aria-label="close">×</button>
+      <div class="ranking-header">🏆 TOP 10 랭킹</div>
+      <div class="ranking-list">
+        <div class="ranking-row"><span>1위 플레이어</span><span>0G</span></div>
+        <div class="ranking-row"><span>2위 플레이어</span><span>0G</span></div>
+        <div class="ranking-row"><span>3위 플레이어</span><span>0G</span></div>
+        <div class="ranking-row"><span>4위 플레이어</span><span>0G</span></div>
+        <div class="ranking-row"><span>5위 플레이어</span><span>0G</span></div>
+        <div class="ranking-row"><span>6위 플레이어</span><span>0G</span></div>
+        <div class="ranking-row"><span>7위 플레이어</span><span>0G</span></div>
+        <div class="ranking-row"><span>8위 풍봉</span><span>0G</span></div>
+        <div class="ranking-row"><span>9위 플레이어</span><span>0G</span></div>
+        <div class="ranking-row"><span>10위 플레이어</span><span>0G</span></div>
+      </div>
     </div>
   </div>
 
-  <!-- 메뉴 카드 2 -->
-  <div class="menu-card">
-    <div class="menu-grid">
-      <a href="inventory.html" class="menu-btn">인벤토리</a>
-      <a href="shop.html" class="menu-btn">상점</a>
-      <a href="achievements.html" class="menu-btn">업적</a>
-      <a href="achievements.html" class="menu-btn">검도감</a>
-    </div>
-  </div>
-
-  <!-- 프로모 카드 -->
-  <div class="promo-row">
-    <a href="game.html" class="promo-card sword" style="text-decoration: none; color: inherit;">
-      <div class="ribbon">NEW</div>
-      <div class="promo-title">Sword<br>Upgrade</div>
-      <div class="promo-sub">강화로 검을 성장시키세요!</div>
-      <div class="promo-icon">🗡️</div>
-    </a>
-    <a href="roulette.html" class="promo-card soon" style="text-decoration: none; color: inherit;">
-      <div class="ribbon">NEW</div>
-      <div class="exclaim">!</div>
-      <div class="promo-title small">roulette</div>
-      <div class="promo-sub">행운의 룰렛을 돌려보세요!</div>
-    </a>
-  </div>
-
-  <!-- 하단 버튼 -->
-  <div class="footer-row">
-    <button class="footer-btn" id="logoutBtn">로그아웃</button>
-  </div>
-
-</div>
-
-<script src="config.js"></script>
-<script src="script.js"></script>
+  <script src="config.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>
